@@ -51,7 +51,14 @@ export default class userHome extends React.Component {
 
                         </View>
                     </View>
-                    
+                    <View style={{justifyContent: 'space-around',flexDirection: 'row',}}>
+                        <View style={{width:wp('45%'),height:hp('40%'),backgroundColor:'#171721',}}>
+
+                        </View>
+                        <View style={{width:wp('45%'),height:hp('40%'),backgroundColor:'#171721',}}>
+
+                        </View>
+                    </View>
                 </View>
 
             </View>
