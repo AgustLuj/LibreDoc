@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { View, TouchableOpacity, Text, Image,StatusBar } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
 import { Button, Input } from 'react-native-elements';
@@ -31,6 +31,7 @@ export default class Login extends React.Component {
         console.log(login);
         return (
             <View style={Light.container}>
+                <StatusBar backgroundColor='#2c2c34' />
                 <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style={Light.Text}>{(login)?'Ingresar':'Registrarse'}</Text>
                     <View style={{width:wp('80%'),marginTop:hp('4%')}}>
