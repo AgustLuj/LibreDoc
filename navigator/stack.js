@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, Image,Button,Dimensions,Alert } from 'react-native';
+import { View, Text, Image,Button,Dimensions,Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import {createDrawerNavigator,DrawerContentScrollView,DrawerItemList,DrawerItem } from '@react-navigation/drawer';
 import { NavigationContainer, CommonActions ,StackActions } from '@react-navigation/native';
-import AsyncStorage  from '@react-native-async-storage/async-storage';
 import Routes from './stackRoutes';
 import { Icon } from 'react-native-elements'
 import {Light} from '../style/general.js';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import AsyncStorage  from '@react-native-async-storage/async-storage';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
 function HomeScreen({ navigation }) {
     return (
@@ -36,7 +41,7 @@ function homeIsScreen({ navigation }) {
     return (
     <View style={Light.container}>
         <View style={Light.TextView}>    
-            <Text style={Light.Text}>Leer pdf's es..</Text>
+            <Text style={Light.Text}>Leer libros es..</Text>
         </View>
         <View style={Light.ButtonContainer}>
             <View style={Light.ButtonView}>
@@ -77,6 +82,72 @@ function easyScreen({ navigation }) {
     </View>
     );
 }
+function CustomDrawerContent(props) {
+    /*<DrawerItem 
+		  label="Cerrar sesion"
+          onPress={async () => {} }
+          options={{labelStyle:{color:'white'}}}
+		/>*/
+	return (
+	  <DrawerContentScrollView {...props}>
+		<DrawerItemList {...props} />
+		
+        <TouchableOpacity 
+            style={{flexDirection: 'row',
+            width: '100%',
+            height: 50,
+            alignItems: 'center',
+            paddingLeft: 20}} 
+            onPress={() => {}}
+        >
+            <Text style={{color:'white'}}>Cerrar Session</Text>                    
+        </TouchableOpacity>
+	  </DrawerContentScrollView>
+	);
+  }
+class drawerScreen extends Component{
+	constructor(props){
+		super(props);
+		this.state={
+			
+		}
+    }
+	async componentDidMount(){
+
+	}
+    render(){
+		return (
+            <Drawer.Navigator 
+                drawerContentOptions={{
+                    //activeBackgroundColor:'#ffff',
+                    itemStyle:{color:'white'},
+				    activeTintColor:'white'
+                }}
+                options={{headerShown:false}}
+                drawerStyle={{
+                    backgroundColor:'#2c2c34',
+                    color:'white'
+                    
+                }} 
+                drawerContentOptions={{
+                    labelStyle: {
+                        fontFamily: 'SomeFont',
+                        color: 'white',
+                    }
+                }} 
+                drawerContent={props => <CustomDrawerContent {...props} />}
+              
+            >
+			<Drawer.Screen name="BestSellers" label='Best Sellers' component={Routes.userHome} />
+            <Drawer.Screen name="Biblio" label='Biblioteca' component={Routes.userHome}/>
+            <Drawer.Screen name="Reading" label='En lectura' component={Routes.userHome}/>
+            <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}/>
+            <Drawer.Screen name="Read" label='Leidos' component={Routes.userHome}/>
+            <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}/>
+			</Drawer.Navigator>
+		);
+	}
+}
 
 class AppStack extends Component{
     constructor(props){
@@ -113,10 +184,15 @@ class AppStack extends Component{
             enable:true,
             component:Routes.Login,
         },{
-            name:'userHome',
+            name:'drawer',
             enable:true,
-            component:Routes.userHome
+            component:drawerScreen
+        },{
+            name:'previewBook',
+            enable:true,
+            component:Routes.previewBook
         }
+
 
         ]
     }
@@ -128,7 +204,7 @@ class AppStack extends Component{
 		const {}= this.state;
         return (
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator initialRouteName="welcome">
                     {this.stack.map(({name,component,enable},i)=>{
                         if(enable){
                             return(<Stack.Screen

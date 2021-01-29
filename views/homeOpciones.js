@@ -23,7 +23,7 @@ export default class Home extends React.Component {
         });
 	}
     buttonGuest = async () =>{
-        this.props.navigation.navigate('userHome');
+        this.props.navigation.navigate('drawer');
     }
     buttonLogin = async () =>{
         this.props.navigation.navigate('Login',{'login':true})
@@ -31,22 +31,7 @@ export default class Home extends React.Component {
     buttonRegister = async ()=>{
         this.props.navigation.navigate('Login',{'login':false})
     }
-    render() {
-        /*
-        <Button
-            onPress={()=>this.buttonLogin()}
-            title="Login"
-            color="#841584"
-            accessibilityLabel="Learn more about this purple button"
-        />
-        <Button
-            onPress={()=>this.buttonRegister()}
-            style={{marginTop:'10px'}}
-            title="Register"
-            color="#841584"
-            accessibilityLabel="Learn more about this purple button"
-        />
-        */
+    render() {     
         return (
             <View style={Light.container}>
                 <View style={{flex:0.9,justifyContent:'center',alignItems:'center'}}>

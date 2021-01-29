@@ -13,7 +13,7 @@ export default class pdfView extends React.Component {
     constructor(props){
         super(props);
         this.state= {
-            source:{uri:'http://192.168.100.42:3000/pdf',cache:false},
+            source:{uri:'http://192.168.100.42/pdf',cache:false},
             width:Dimensions.get('window').width,
             height:Dimensions.get('window').height,
             next:false
@@ -28,7 +28,7 @@ export default class pdfView extends React.Component {
         });
     }
     async changeUser(){
-        const pagina = 'http://192.168.100.42:3000';
+        const pagina = 'http://192.168.100.42';
         //body: JSON.stringify({_id,name,usern,seg,segold}),
         const querry = await fetch(`${pagina}/next`,{
         method:'POST',
@@ -43,7 +43,7 @@ export default class pdfView extends React.Component {
         }else{
             this.props.navigation.reset({
                 index: 1,
-                routes: [{ name: 'Login' },{ name: 'pdfView' }],
+                routes: [{ name: 'drawer' },{ name: 'pdfView' }],
               });
         }
     }
