@@ -138,12 +138,12 @@ class drawerScreen extends Component{
                 drawerContent={props => <CustomDrawerContent {...props} />}
               
             >
-			<Drawer.Screen name="BestSellers" label='Best Sellers' component={Routes.userHome} />
-            <Drawer.Screen name="Biblio" label='Biblioteca' component={Routes.userHome}/>
-            <Drawer.Screen name="Reading" label='En lectura' component={Routes.userHome}/>
-            <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}/>
-            <Drawer.Screen name="Read" label='Leidos' component={Routes.userHome}/>
-            <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}/>
+			<Drawer.Screen name="BestSellers" component={Routes.userHome} options={{drawerLabel:'Mas Leidos'}}/>
+            <Drawer.Screen name="Biblio" component={Routes.userHome} options={{drawerLabel:'Biblioteca'}}/>
+            <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}options={{drawerLabel:'Favoritos'}}/>
+            <Drawer.Screen name="Reading" label='En lectura' component={Routes.userHome} options={{drawerLabel:'En lectura'}}/>
+            <Drawer.Screen name="Read" label='Leidos' component={Routes.userHome}options={{drawerLabel:'Leidos'}}/>
+            <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}options={{drawerLabel:'Configuracion'}}/>
 			</Drawer.Navigator>
 		);
 	}
@@ -201,10 +201,11 @@ class AppStack extends Component{
 	}
     render(){
 		
-		const {}= this.state;
+        const {}= this.state;
+        let b=true;
         return (
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="welcome">
+                <Stack.Navigator initialRouteName={(b)?'welcome':'drawer'}>
                     {this.stack.map(({name,component,enable},i)=>{
                         if(enable){
                             return(<Stack.Screen
