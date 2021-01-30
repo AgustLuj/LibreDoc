@@ -13,9 +13,9 @@ export default class userHome extends React.Component {
         this.state= {
             change:true
         }
-        this.javier=['Libertad Libertad Libertad','javier2','javier3','javier4','javier5','javier6','javier7','javier8','javier9','javier10','javier12','javier13'];
-        this.three = false;
-        this.rows=2
+        this.javier=['La llave del aguila','javier2','javier3','javier4','javier5','javier6','javier7','javier8','javier9','javier10','javier12','javier13'];
+        this.three = true;
+        this.rows=3
     }
     changeScale(){
         this.three=(this.three)?false:true;
@@ -34,7 +34,7 @@ export default class userHome extends React.Component {
                     placement="left"
                     statusBarProps={{ backgroundColor:'#171721' }}
                     leftComponent={{ icon: 'menu', color: '#fff',onPress: () => this.props.navigation.openDrawer() }}
-                    centerComponent={{ text: 'Best Sellers', style: { color: '#fff',fontSize:hp('3%'), } }}
+                    centerComponent={{ text: 'Mas Leidos', style: { color: '#fff',fontSize:hp('3%'), } }}
                     rightComponent={{ icon: 'home', color: '#fff' ,onPress: () => this.changeScale()}}
                     containerStyle={{
                         backgroundColor: '#171721',
@@ -63,7 +63,7 @@ export default class userHome extends React.Component {
                                         )
                                     }else{
                                         return(
-                                        <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook')} key={j}>
+                                        <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{name:a}) } key={j}>
                                             <View style={{width:wp('30%'),height:hp('25%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}} key={j} >
                                                         <Image
                                                             style={{flex:1}}

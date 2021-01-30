@@ -11,13 +11,51 @@ export default class userHome extends React.Component {
     constructor(props){
         super(props);
         this.state= {
+            fav:false,
+            biblio:false
         }
     }
     render() {
         /*
-        
+        <View style={{alignContent:'center',justifyContent:'space-around', flexDirection:'row'}}>
+                                    <Button
+                                        containerStyle={{marginTop:wp('10%')}}
+                                        buttonStyle={{backgroundColor:'#171721'}}
+                                        disabledStyle={{backgroundColor:'#171721'}}
+                                        icon={
+                                            <Icon
+                                            name={(biblio)?"checkmark-done":"add"}
+                                            type='ionicon'
+                                            size={hp('4%')}
+                                            color="white"
+                                            />
+                                        }
+                                        onPress={()=>{this.setState({biblio:(biblio)?false:true})}}
+                                    />
+                                    <Button
+                                        containerStyle={{marginTop:wp('10%')}}
+                                        buttonStyle={{backgroundColor:'#171721',width:wp('25%')}}
+                                        titleStyle={{fontSize:hp('3%')}}
+                                        title="Leer"
+                                        onPress={()=>{this.props.navigation.navigate('pdfView');}}
+                                    />
+                                    <Button
+                                        containerStyle={{marginTop:wp('10%')}}
+                                        buttonStyle={{backgroundColor:'#171721'}}
+                                        icon={
+                                            <Icon
+                                            name={(fav)?"star":"star-outline"}
+                                            type='ionicon'
+                                            size={hp('4%')}
+                                            color="white"
+                                            />
+                                        }
+                                        onPress={()=>{this.setState({fav:(fav)?false:true})}}
+                                    />
+                                </View>
         */
        //console.log(this.props.route)
+       let {fav,biblio} =this.state 
        let {name}=this.props.route.params
         return (
             <View style={Light.container}>
@@ -38,30 +76,60 @@ export default class userHome extends React.Component {
                 <View style={{flex:1}}>
                     <View style={{flex:1,flexDirection: 'column',marginTop:hp('3%')}}>
                         <View style={{flexDirection: 'row',marginLeft:wp('5%')}}>
-                            <View style={{width:wp('50%'),height:hp('45%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}} >
+                            <View style={{width:wp('40%'),height:hp('35%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}} >
                                 <Image
                                     style={{flex:1}}
                                     source={{uri: 'http://192.168.100.42/foto'}}
                                 />
                             </View>
-                            <View style={{flexDirection: 'column',marginLeft:wp('2%')}}>
-                                <Text style={{color:'white'}}>Autor: Javier Milei</Text>
-                                <Text style={{color:'white'}}>Copias: 800</Text>
-                                <Text style={{color:'white'}}>Leido: 400</Text>
+                            <View style={{flex:1,flexDirection: 'column',marginLeft:wp('2%'),justifyContent:'space-between'}}>
+                                <View style={{flexDirection:'column'}}>
+                                    <Text style={{color:'white'}}>Autor: Elisa Roldán</Text>
+                                    <Text style={{color:'white'}}>Copias: 800</Text>
+                                    <Text style={{color:'white'}}>Leido: 400</Text>
+                                </View>
+                                
                             </View>
-
+                            
                         </View>
                         <ScrollView style={{marginTop:hp('3%')}}>
                             <Text style={{color:'white',paddingLeft:wp('5%'),paddingRight:wp('5%'),marginBottom:hp('1%')}}>Descripcion:</Text>
-                            <Text style={{color:'white',fontSize:hp('2%'),paddingLeft:wp('5%'),paddingRight:wp('5%')}}>Nosotros queremos exponer a la gente a las ideas libertarias, en forma directa, sin intermediarios. aunque logremos solo acercarnos un poco ms a la libertad, es necesario empezar. nos preguntan: ¿no es utópico? tal vez. pero las ideas acatan como un faro. y son menos utópicas que el paradigma político que nos gobierna. siguen creyendo que gobiernan por la gracia de dios, aunque lo llamen pueblo; creen saber que es el bienestar general y que saben cómo alcanzarlo. Además, los políticos creen que nosotros, los ciudadanos, somos pasivos. no lo somos. tenemos que salir de un círculo vicioso. como explica Friedrich Hayek, el político fracasa y vuelve a intervenir, los fracasos se acumulan y la calidad de vida es cada vez peor. sobre este paradigma está construida la sociedad actual. es un paradigma equivocado, que nos hace ms pobres y menos libres. pero hay otro camino: el camino de la libertad. Javier milei y diego giacomini</Text>
+                            <Text style={{color:'white',fontSize:hp('2%'),paddingLeft:wp('5%'),paddingRight:wp('5%')}}>Diego ha quedado huérfano y vive en Mendoza. Decide buscar a su familia materna con las únicas pistas que tiee: un apellido y una pequeña llave de oro con forma de águila. No imagina las aventuras que deberá correr, ayudado por sus amigos, hasta descubrir el secreto que encierra la historia de sus padres.</Text>
 
-                            <View style={{alignItems:'center',justifyContent:'center'}}>
+                            <View style={{alignContent:'center',justifyContent:'space-around', flexDirection:'row'}}>
                                 <Button
                                     containerStyle={{marginTop:wp('10%'),marginBottom:wp('5%')}}
-                                    buttonStyle={{backgroundColor:'#171721',width:wp('80%')}}
+                                    buttonStyle={{backgroundColor:'#171721'}}
+                                    disabledStyle={{backgroundColor:'#171721'}}
+                                    icon={
+                                        <Icon
+                                          name={(biblio)?"checkmark-done":"add"}
+                                          type='ionicon'
+                                          size={hp('7%')}
+                                          color="white"
+                                        />
+                                      }
+                                    onPress={()=>{this.setState({biblio:(biblio)?false:true})}}
+                                />
+                                <Button
+                                    containerStyle={{marginTop:wp('10%'),marginBottom:wp('5%')}}
+                                    buttonStyle={{backgroundColor:'#171721',width:wp('60%')}}
                                     titleStyle={{fontSize:hp('5%')}}
                                     title="Leer"
                                     onPress={()=>{this.props.navigation.navigate('pdfView');}}
+                                />
+                                <Button
+                                    containerStyle={{marginTop:wp('10%'),marginBottom:wp('5%')}}
+                                    buttonStyle={{backgroundColor:'#171721'}}
+                                    icon={
+                                        <Icon
+                                          name={(fav)?"star":"star-outline"}
+                                          type='ionicon'
+                                          size={hp('7%')}
+                                          color="white"
+                                        />
+                                      }
+                                    onPress={()=>{this.setState({fav:(fav)?false:true})}}
                                 />
                             </View>
 
