@@ -116,6 +116,9 @@ class drawerScreen extends Component{
 
 	}
     render(){
+        /*
+        <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}options={{drawerLabel:'Configuracion'}}/>
+        */
 		return (
             <Drawer.Navigator 
                 drawerContentOptions={{
@@ -139,11 +142,11 @@ class drawerScreen extends Component{
               
             >
 			<Drawer.Screen name="BestSellers" component={Routes.userHome} options={{drawerLabel:'Mas Leidos'}}/>
+            <Drawer.Screen name="Books" component={Routes.userHome} options={{drawerLabel:'Libros'}}/>
             <Drawer.Screen name="Biblio" component={Routes.userHome} options={{drawerLabel:'Biblioteca'}}/>
             <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}options={{drawerLabel:'Favoritos'}}/>
-            <Drawer.Screen name="Reading" label='En lectura' component={Routes.userHome} options={{drawerLabel:'En lectura'}}/>
-            <Drawer.Screen name="Read" label='Leidos' component={Routes.userHome}options={{drawerLabel:'Leidos'}}/>
-            <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}options={{drawerLabel:'Configuracion'}}/>
+            <Drawer.Screen name="Reading" label='En lectura' component={Routes.Reading} options={{drawerLabel:'En lectura'}}/>
+            <Drawer.Screen name="Read" label='Leidos' component={Routes.Read}options={{drawerLabel:'Leidos'}}/>
 			</Drawer.Navigator>
 		);
 	}
@@ -192,6 +195,7 @@ class AppStack extends Component{
             enable:true,
             component:Routes.previewBook
         }
+        
 
 
         ]
@@ -202,7 +206,7 @@ class AppStack extends Component{
     render(){
 		
         const {}= this.state;
-        let b=true;
+        let b=false;
         return (
             <NavigationContainer>
                 <Stack.Navigator initialRouteName={(b)?'welcome':'drawer'}>

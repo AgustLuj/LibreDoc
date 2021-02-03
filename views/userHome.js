@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
 import { Button, Input, Header } from 'react-native-elements';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { Icon } from 'react-native-elements'
+import { Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class userHome extends React.Component {
@@ -14,8 +14,8 @@ export default class userHome extends React.Component {
             change:true
         }
         this.javier=['La llave del aguila','javier2','javier3','javier4','javier5','javier6','javier7','javier8','javier9','javier10','javier12','javier13'];
-        this.three = true;
-        this.rows=3
+        this.three = false;
+        this.rows=2
     }
     changeScale(){
         this.three=(this.three)?false:true;
@@ -35,7 +35,7 @@ export default class userHome extends React.Component {
                     statusBarProps={{ backgroundColor:'#171721' }}
                     leftComponent={{ icon: 'menu', color: '#fff',onPress: () => this.props.navigation.openDrawer() }}
                     centerComponent={{ text: 'Mas Leidos', style: { color: '#fff',fontSize:hp('3%'), } }}
-                    rightComponent={{ icon: 'home', color: '#fff' ,onPress: () => this.changeScale()}}
+                    rightComponent={{ icon: 'search', color: '#fff' ,onPress: () => this.changeScale()}}
                     containerStyle={{
                         backgroundColor: '#171721',
                         justifyContent: 'space-around',
