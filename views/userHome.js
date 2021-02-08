@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image,StatusBar,ScrollView } from 'react-native';
+import { View, Text, Image,StatusBar,ScrollView, RefreshControl } from 'react-native';
+import {user as User ,books as Books} from '../components/index';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
-import { Button, Input, Header } from 'react-native-elements';
+import { Button, Input, Header,SearchBar  } from 'react-native-elements';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,16 +12,56 @@ export default class userHome extends React.Component {
     constructor(props){
         super(props);
         this.state= {
-            change:true
+            change:true,
+            noti:false,
+            recharge:false,
         }
+        this._onRefresh=this._onRefresh.bind(this);
         this.javier=['La llave del aguila','javier2','javier3','javier4','javier5','javier6','javier7','javier8','javier9','javier10','javier12','javier13'];
+        this.books=[];
+        this.skip=0;
         this.three = false;
-        this.rows=2
+        this.rows=2;
+        this.a=0;
+    }
+    async componentDidMount(){
+        this._onRefresh();
+    }
+    _onRefresh = () => {
+        this.setState({refreshing: true});
+        this.books = []
+        this.loadBook((book)=>{
+            this.books=book;
+            this.skip+=10;
+            this.setState({refreshing: false});
+        });
+    }
+    async loadBook(fn){
+        await Books.getBooks(this.skip,(r,books)=>{
+            fn(books)
+        })
+    }
+    async loadMoreBook(){
+        await this.loadBook((book)=>{
+            book.forEach((a)=>{
+                let c = this.books.find(({_id})=>a._id === _id);
+                if(c == null){
+                    this.books.push(a);
+                }
+            })
+        });
+        this.skip+=10;
+        this.setState({recharge:false});
     }
     changeScale(){
         this.three=(this.three)?false:true;
         this.rows=(this.rows == 2)?3:2;
         this.setState({change:true})
+    }
+    isCloseToBottom({layoutMeasurement, contentOffset, contentSize}){
+        const paddingToBottom = 0.05;
+        return layoutMeasurement.height + contentOffset.y >=
+          contentSize.height - paddingToBottom; 
     }
     render() {
        b=0;
@@ -35,7 +76,7 @@ export default class userHome extends React.Component {
                     statusBarProps={{ backgroundColor:'#171721' }}
                     leftComponent={{ icon: 'menu', color: '#fff',onPress: () => this.props.navigation.openDrawer() }}
                     centerComponent={{ text: 'Mas Leidos', style: { color: '#fff',fontSize:hp('3%'), } }}
-                    rightComponent={{ icon: 'search', color: '#fff' ,onPress: () => this.changeScale()}}
+                    rightComponent={{ icon: 'notifications', color: (this.state.noti)?'red':'#fff' ,onPress: () => this.setState({noti:(this.state.noti)?false:true})}}
                     containerStyle={{
                         backgroundColor: '#171721',
                         justifyContent: 'space-around',
@@ -44,18 +85,32 @@ export default class userHome extends React.Component {
                         flex:0.07,
                     }}
                 />
-                <ScrollView style={{flex:1,}}>
+                <ScrollView 
+                    style={{flex:1}} 
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                    onScroll={({nativeEvent}) => {
+                        if (this.isCloseToBottom(nativeEvent)) {
+                            this.loadMoreBook();
+                        }
+                    }}
+                >
                     <View style={{ justifyContent: 'space-around',flexDirection: 'column',}}>
-                        {Array(this.javier.length/this.rows).fill(this.javier.length/this.rows).map((guest,i) => {//array vacio para tener las columnas
-                            return(<View style={{justifyContent: 'space-around',flexDirection: 'row',marginTop:hp('2%'),marginBottom:hp('2%')}}key={i}>
-                                {this.javier.slice(b,b+this.rows).map((a,j)=>{//Corto el array original con el largo de las rows entre 2 y 3 de largo
+                        {Array(this.books.length/this.rows).fill(this.books.length/this.rows).map((guest,i) => {//array vacio para tener las columnas
+                            return(<View style={{justifyContent: 'space-around',flexDirection: 'row',marginTop:hp('1.5%'),marginBottom:hp('1.5%')}}key={i}>
+                                {this.books.slice(b,b+this.rows).map(({_id},j)=>{//Corto el array original con el largo de las rows entre 2 y 3 de largo
+                                    let uri ='http://192.168.100.42/books/'+_id+'/foto';
                                     if(!this.three){
                                         return(
-                                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{name:a}) } key={j}>
-                                                <View style={{width:wp('45%'),height:hp('40%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}}key={j} >
+                                            <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{_id}) } key={j}>
+                                                <View style={{width:wp('47%'),height:hp('45%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}}key={j} >
                                                     <Image
                                                         style={{flex:1}}
-                                                        source={{uri: 'http://192.168.100.42/foto'}}
+                                                        source={{uri}}
                                                     />
                                                     {c()}
                                                 </View>
@@ -63,11 +118,11 @@ export default class userHome extends React.Component {
                                         )
                                     }else{
                                         return(
-                                        <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{name:a}) } key={j}>
+                                        <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{_id}) } key={j}>
                                             <View style={{width:wp('30%'),height:hp('25%'),backgroundColor:'#171721',borderColor:'white',borderWidth:1}} key={j} >
                                                         <Image
                                                             style={{flex:1}}
-                                                            source={{uri: 'http://192.168.100.42/foto'}}
+                                                            source={{uri}}
                                                         />
                                                         {c()}
                                             </View>

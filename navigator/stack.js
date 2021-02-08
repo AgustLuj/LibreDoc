@@ -142,7 +142,7 @@ class drawerScreen extends Component{
               
             >
 			<Drawer.Screen name="BestSellers" component={Routes.userHome} options={{drawerLabel:'Mas Leidos'}}/>
-            <Drawer.Screen name="Books" component={Routes.userHome} options={{drawerLabel:'Libros'}}/>
+            <Drawer.Screen name="Books" component={Routes.Books} options={{drawerLabel:'Libros'}}/>
             <Drawer.Screen name="Biblio" component={Routes.userHome} options={{drawerLabel:'Biblioteca'}}/>
             <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}options={{drawerLabel:'Favoritos'}}/>
             <Drawer.Screen name="Reading" label='En lectura' component={Routes.Reading} options={{drawerLabel:'En lectura'}}/>

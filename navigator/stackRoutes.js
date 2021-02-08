@@ -5,6 +5,7 @@ import userHome from '../views/userHome';
 import previewBook from '../views/previewBook';
 import Reading from '../views/reading';
 import Read from '../views/read'
+import Books from '../views/books';
 
 export default {
     pdfView,
@@ -13,5 +14,6 @@ export default {
     userHome,
     previewBook,
     Reading,
-    Read
+    Read,
+    Books
 }
