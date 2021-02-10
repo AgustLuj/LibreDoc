@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, Image,StatusBar,ScrollView, RefreshControl } from 'react-native';
-import { Button, Input, Header,Icon  } from 'react-native-elements';
-import AsyncStorage  from '@react-native-async-storage/async-storage';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import {user as User ,books as Books} from '../components/index';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
+import { Button, Input, Header,SearchBar  } from 'react-native-elements';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class userHome extends React.Component {
@@ -22,39 +22,75 @@ export default class userHome extends React.Component {
         this.three = false;
         this.rows=2;
         this.a=0;
+        this.type = this.props.route.params.type
     }
     async componentDidMount(){
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-        this.focusListener = this.props.navigation.addListener('focus', async() => {
-            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-        });
         this._onRefresh();
     }
     _onRefresh = () => {
         this.setState({refreshing: true});
         this.books = []
-        this.loadBook((book)=>{
-            this.books=book;
-            this.skip+=10;
+        this.loadBook((err,book)=>{
+            if(!err){
+                console.log(err,book);
+                if(book.length > 0 ){
+                    this.books=book;
+                }
+                this.skip+=10;
+                //console.log(this.books,book)
+                this.setState({refreshing: false});
+                return null;
+            }
             this.setState({refreshing: false});
         });
     }
     async loadBook(fn){
-        await Books.getBooks(this.skip,(r,books)=>{
-            fn(books)
-        })
+        switch(this.type){
+            case 1:
+                await Books.getBooks(this.skip,(r,books)=>{
+                    if(r){
+                        fn(false,books)
+                    }else{
+                        fn(true)
+                    }
+                })
+                break;
+            case 2:
+                await Books.getUsersBooks(global.user,true,(r,books)=>{
+                    if(r){
+                        fn(false,books)
+                    }else{
+                        fn(true)
+                    }
+                })
+                break;
+            case 3:
+                await Books.getUsersBooks(global.user,false,(r,books)=>{
+                    if(r){
+                        fn(false,books)
+                    }else{
+                        fn(true)
+                    }
+                })
+                break;
+            default:
+                fn(true)
+                break;
+        }
     }
     async loadMoreBook(){
-        await this.loadBook((book)=>{
-            book.forEach((a)=>{
-                let c = this.books.find(({_id})=>a._id === _id);
-                if(c == null){
-                    this.books.push(a);
-                }
-            })
-        });
-        this.skip+=10;
-        this.setState({recharge:false});
+        if(this.type == 1){
+            await this.loadBook((book)=>{
+                book.forEach((a)=>{
+                    let c = this.books.find(({_id})=>a._id === _id);
+                    if(c == null){
+                        this.books.push(a);
+                    }
+                })
+            });
+            this.skip+=10;
+            this.setState({recharge:false});
+        }
     }
     changeScale(){
         this.three=(this.three)?false:true;
@@ -67,10 +103,11 @@ export default class userHome extends React.Component {
           contentSize.height - paddingToBottom; 
     }
     render() {
-       b=0;
-       const c =()=>{
+        b=0;
+        const c =()=>{
            b++;
-       }
+        }
+        //console.log(this.props.route)
         return (
             <View style={Light.container}>
                 <StatusBar backgroundColor='#2c2c34' />
@@ -78,8 +115,8 @@ export default class userHome extends React.Component {
                     placement="left"
                     statusBarProps={{ backgroundColor:'#171721' }}
                     leftComponent={{ icon: 'menu', color: '#fff',onPress: () => this.props.navigation.openDrawer() }}
-                    centerComponent={{ text: 'Mas Leidos', style: { color: '#fff',fontSize:hp('3%'), } }}
-                    rightComponent={{ icon: 'notifications', color: (this.state.noti)?'red':'#fff' ,onPress: () => this.setState({noti:(this.state.noti)?false:true})}}
+                    centerComponent={{ text: (this.type == 1)?'Libros':(this.type == 2)?'Biblioteca':'Favoritos', style: { color: '#fff',fontSize:hp('3%'), } }}
+                    rightComponent={{ icon: 'search', color: (this.state.noti)?'red':'#fff' ,onPress: () =>{}}}
                     containerStyle={{
                         backgroundColor: '#171721',
                         justifyContent: 'space-around',
@@ -103,7 +140,7 @@ export default class userHome extends React.Component {
                     }}
                 >
                     <View style={{ justifyContent: 'space-around',flexDirection: 'column',}}>
-                        {Array(this.books.length/this.rows).fill(this.books.length/this.rows).map((guest,i) => {//array vacio para tener las columnas
+                        {Array(Math.round(this.books.length/this.rows)).fill(Math.round(this.books.length/this.rows)).map((guest,i) => {//array vacio para tener las columnas
                             return(<View style={{justifyContent: 'space-around',flexDirection: 'row',marginTop:hp('1.5%'),marginBottom:hp('1.5%')}}key={i}>
                                 {this.books.slice(b,b+this.rows).map(({_id},j)=>{//Corto el array original con el largo de las rows entre 2 y 3 de largo
                                     let uri ='http://192.168.100.42/books/'+_id+'/foto';
