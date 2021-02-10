@@ -39,7 +39,7 @@ export default class userHome extends React.Component {
         })
     }
     async addBook(){
-        User.addBook('AgustLuj',this._id,(f,r=false)=>{
+        User.addBook(global.user,this._id,(f,r=false)=>{
             if(f){
                 this.setState({biblio:true})
             }else{
@@ -50,7 +50,7 @@ export default class userHome extends React.Component {
         })
     }
     async addFavBook(){
-        User.addFavBook('AgustLuj',this._id,(f,r=false)=>{
+        User.addFavBook(global.user,this._id,(f,r=false)=>{
             if(f){
                 this.setState({fav:true})
             }else{
@@ -61,7 +61,7 @@ export default class userHome extends React.Component {
         })
     }
     async searchBook(fn){
-        User.searchBook('AgustLuj',this._id,(f,{favorite:fav,biblio})=>{
+        User.searchBook(global.user,this._id,(f,{favorite:fav,biblio})=>{
             if(f){
                 this.setState({fav,biblio})
                 fn();
@@ -85,7 +85,7 @@ export default class userHome extends React.Component {
                 <Header
                     placement="left"
                     statusBarProps={{ backgroundColor:'#171721' }}
-                    leftComponent={{ icon: 'menu', color: '#fff',onPress: () => this.props.navigation.openDrawer() }}
+                    leftComponent={{ icon: 'arrow-back', color: '#fff',onPress: () => this.props.navigation.goBack() }}
                     centerComponent={{ text: this.bookData.name, style: { color: '#fff',fontSize:hp('2.5%'), } }}
                     containerStyle={{
                         backgroundColor: '#171721',

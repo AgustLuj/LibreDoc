@@ -1,18 +1,24 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image,StatusBar } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import {Light} from '../style/general';
-import { Button, Input } from 'react-native-elements';
+import { View, TouchableOpacity, Text, Image,StatusBar, Keyboard,Alert } from 'react-native';
+import { Button, Input, Icon } from 'react-native-elements';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { Icon } from 'react-native-elements'
+import AsyncStorage  from '@react-native-async-storage/async-storage';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import {user as User} from '../components/index';
+import {Light} from '../style/general';
 
 export default class Login extends React.Component {
     constructor(props){
         super(props);
         this.login=this.props.route.params.login
         this.state= {
-            
+            errU:false,
+            errG:false,
+            info:'Error Desconocido'
         }
+        this.buttonLogin = this.buttonLogin.bind(this);
+        this.name='';
+        this.pass='';
     }
     async componentDidMount(){
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -21,20 +27,78 @@ export default class Login extends React.Component {
         });
 	}
     buttonLogin = async () =>{
-        this.props.navigation.navigate('pdfView')
+        User.getData(this.name,this.pass,async(err,data)=>{
+            if(err){
+                if(!data.login){
+                    this.setState({errU:true,info:'El usuario o contraseña ingresado es incorrecto'})
+                }else{
+                    this.setState({errG:true});
+                }
+            }else{
+                if(data){
+                    global.user=this.name;
+                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'drawer', }],
+                      })
+                }
+            }
+        })
     }
     buttonRegister = async ()=>{
-        console.log('hola1')
+        await Keyboard.dismiss();
+        this.setState({errU:false,errG:false})
+        if(this.name.length >4 && this.pass.length >=4 ){
+            await User.searchUser(this.name,async (u)=>{
+                if(u){
+                    await User.setData(this.name,this.pass,(f)=>{
+                        if(f){
+                            Alert.alert(
+                                "Importante",
+                                "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
+                                [
+                                  { text: "Acepto", onPress: async() => {
+                                    global.user=this.name;
+                                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
+                                    this.props.navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'drawer', }],
+                                      });} }
+                                ],
+                                { cancelable: true }
+                              );
+                        }else{
+                            this.setState({errG:true});        
+                        }
+                    })
+                    
+                }else{
+                    this.setState({errU:true,info:'El usuario ingresado ya esta en uso'})
+                }
+            })
+        }else{
+            if(this.name.length <4){
+                this.setState({errU:true,info:'El usuario ingresado es muy corto'})
+            }
+            if(this.pass.length <6){
+                this.setState({errP:true,info:'La contraseña ingresado es muy corta'})
+            }
+        }
     }
     render() {
         let {login}=this.props.route.params
-        console.log(login);
+        let {errU,errG,info,errP}= this.state
+        //console.log(login);
         return (
             <View style={Light.container}>
                 <StatusBar backgroundColor='#2c2c34' />
                 <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style={Light.Text}>{(login)?'Ingresar':'Registrarse'}</Text>
-                    <View style={{width:wp('80%'),marginTop:hp('4%')}}>
+                    {(errG)?<Text style={{color:'red',fontSize:wp('4%')}}>Error vuelva a intentarlo</Text>:null}
+                    <View style={{width:wp('90%'),marginTop:wp('4%')}}>
                         <Input
                             placeholder="Usuario"
                             leftIcon={<Icon
@@ -43,8 +107,10 @@ export default class Login extends React.Component {
                                 size={24}
                                 color='white'
                               />}
-                            style={{}}
-                            onChangeText={value => this.setState({ comment: value })}
+                            style={{color:'white'}}
+                            errorMessage={(errU)?info:null}
+                            errorStyle={{fontSize:wp('3.5%')}}
+                            onChangeText={value => this.name=value}
                         />
                         <Input
                             placeholder="Contraseña"
@@ -54,8 +120,11 @@ export default class Login extends React.Component {
                                 size={24}
                                 color='white'
                               />}
-                            style={{}}
-                            onChangeText={value => this.setState({ comment: value })}
+                            keyboardType='numeric'
+                            style={{color:'white'}}
+                            errorMessage={(errP)?info:null}
+                            errorStyle={{fontSize:wp('3.5%')}}
+                            onChangeText={value => this.pass = value}
                             secureTextEntry={true}
                         />
                     </View>
@@ -64,7 +133,7 @@ export default class Login extends React.Component {
                         buttonStyle={{backgroundColor:'#171721',width:hp('25%')}}
                         titleStyle={{fontSize:hp('3%')}}
                         title={(login)?'Ingresar':'Registrarse'}
-                        onPressOut={()=>{(this.login)?this.buttonLogin():this.buttonRegister()}}
+                        onPress ={()=>{(this.login)?this.buttonLogin():this.buttonRegister()}}
                     />        
                 </View>
             </View>

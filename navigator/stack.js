@@ -70,7 +70,8 @@ function easyScreen({ navigation }) {
                     type='ionicon'
                     color='white'
                     size={60}
-                    onPress={() => {
+                    onPress={async () => {
+                        await AsyncStorage.setItem('@Welcome', JSON.stringify({welcome:false}));
                         navigation.reset({
                             index: 0,
                             routes: [{ name: 'homeOpciones', }],
@@ -98,7 +99,16 @@ function CustomDrawerContent(props) {
             height: 50,
             alignItems: 'center',
             paddingLeft: 20}} 
-            onPress={() => {}}
+            onPress={async() => {
+                global.login=false;
+                delete global.user;
+                await AsyncStorage.removeItem('@User');
+                await AsyncStorage.setItem('@Login', JSON.stringify({login:false}));
+                props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'homeOpciones', }],
+                  });
+            }}
         >
             <Text style={{color:'white'}}>Cerrar Session</Text>                    
         </TouchableOpacity>
@@ -142,9 +152,9 @@ class drawerScreen extends Component{
               
             >
 			<Drawer.Screen name="BestSellers" component={Routes.userHome} options={{drawerLabel:'Mas Leidos'}}/>
-            <Drawer.Screen name="Books" component={Routes.Books} options={{drawerLabel:'Libros'}}/>
-            <Drawer.Screen name="Biblio" component={Routes.userHome} options={{drawerLabel:'Biblioteca'}}/>
-            <Drawer.Screen name="favorites" label='Favoritos' component={Routes.userHome}options={{drawerLabel:'Favoritos'}}/>
+            <Drawer.Screen name="Books" component={Routes.Books} initialParams={{ type: 1 }} options={{drawerLabel:'Libros'}}/>
+            <Drawer.Screen name="Biblio" component={Routes.Books} initialParams={{ type: 2 }} options={{drawerLabel:'Biblioteca'}}/>
+            <Drawer.Screen name="favorites" label='Favoritos' initialParams={{ type: 3 }} component={Routes.Books} options={{drawerLabel:'Favoritos'}}/>
             <Drawer.Screen name="Reading" label='En lectura' component={Routes.Reading} options={{drawerLabel:'En lectura'}}/>
             <Drawer.Screen name="Read" label='Leidos' component={Routes.Read}options={{drawerLabel:'Leidos'}}/>
 			</Drawer.Navigator>
@@ -156,8 +166,13 @@ class AppStack extends Component{
     constructor(props){
 		super(props);
 		this.state={
+            enable:true,
+            login:false
         }
-        this.enable=true;
+        this.enable= global.welcome;
+        this.login = global.login;
+        
+        
         this.stack=[{
             name:'welcome',
             component:HomeScreen,
@@ -194,22 +209,19 @@ class AppStack extends Component{
             name:'previewBook',
             enable:true,
             component:Routes.previewBook
-        }
-        
-
-
-        ]
+        }]
     }
     async componentDidMount(){
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
 	}
     render(){
 		
-        const {}= this.state;
-        let b=false;
+        const {enable,login}= this.state;
+        let b=true;
+        //console.log(this.enable,this.login)
         return (
             <NavigationContainer>
-                <Stack.Navigator initialRouteName={(b)?'welcome':'drawer'}>
+                <Stack.Navigator initialRouteName={(this.enable)?'welcome':(this.login)?'drawer':'homeOpciones'}>
                     {this.stack.map(({name,component,enable},i)=>{
                         if(enable){
                             return(<Stack.Screen

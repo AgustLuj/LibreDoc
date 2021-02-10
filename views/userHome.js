@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, Image,StatusBar,ScrollView, RefreshControl } from 'react-native';
-import {user as User ,books as Books} from '../components/index';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import {Light} from '../style/general';
-import { Button, Input, Header,SearchBar  } from 'react-native-elements';
+import { Button, Input, Header,Icon  } from 'react-native-elements';
+import AsyncStorage  from '@react-native-async-storage/async-storage';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { Icon } from 'react-native-elements';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import {user as User ,books as Books} from '../components/index';
+import {Light} from '../style/general';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class userHome extends React.Component {
@@ -17,7 +17,6 @@ export default class userHome extends React.Component {
             recharge:false,
         }
         this._onRefresh=this._onRefresh.bind(this);
-        this.javier=['La llave del aguila','javier2','javier3','javier4','javier5','javier6','javier7','javier8','javier9','javier10','javier12','javier13'];
         this.books=[];
         this.skip=0;
         this.three = false;
@@ -25,6 +24,10 @@ export default class userHome extends React.Component {
         this.a=0;
     }
     async componentDidMount(){
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        this.focusListener = this.props.navigation.addListener('focus', async() => {
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        });
         this._onRefresh();
     }
     _onRefresh = () => {
