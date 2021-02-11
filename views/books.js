@@ -32,12 +32,10 @@ export default class userHome extends React.Component {
         this.books = []
         this.loadBook((err,book)=>{
             if(!err){
-                console.log(err,book);
                 if(book.length > 0 ){
                     this.books=book;
+                    this.skip+=10;
                 }
-                this.skip+=10;
-                //console.log(this.books,book)
                 this.setState({refreshing: false});
                 return null;
             }
@@ -56,7 +54,7 @@ export default class userHome extends React.Component {
                 })
                 break;
             case 2:
-                await Books.getUsersBooks(global.user,true,(r,books)=>{
+                await Books.getUsersBooks(true,(r,books)=>{
                     if(r){
                         fn(false,books)
                     }else{
@@ -65,7 +63,7 @@ export default class userHome extends React.Component {
                 })
                 break;
             case 3:
-                await Books.getUsersBooks(global.user,false,(r,books)=>{
+                await Books.getUsersBooks(false,(r,books)=>{
                     if(r){
                         fn(false,books)
                     }else{

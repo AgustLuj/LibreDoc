@@ -4,6 +4,7 @@ import { Icon } from 'react-native-elements'
 import { encrypt, decrypt } from 'react-native-simple-encryption';
 import Pdf from 'react-native-pdf';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const window = Dimensions.get("window");
 const screen = Dimensions.get("screen");
@@ -12,10 +13,11 @@ const screen = Dimensions.get("screen");
 export default class pdfView extends React.Component {
     constructor(props){
         super(props);
+        this.id =this.props.route.params._id
         this.state= {
-            source:{uri:'http://192.168.100.42/pdf',cache:false},
+            source:{uri:`http://192.168.100.42/users/${global.user}/read/${this.id}`,cache:false},
             width:Dimensions.get('window').width,
-            height:Dimensions.get('window').height,
+            height:Dimensions.get('window').height-300,
             next:false
         }
     }
@@ -54,13 +56,12 @@ export default class pdfView extends React.Component {
      //<ScrollView style={{flex:1}} scrollEnabled={scroll} ref='_scrollView'></ScrollView>
         return (
             <View style={styles.container}>
-                <View style={{flex:1}}>
+                <View style={{flex:1,marginTop:hp('3.5%'),marginBottom:hp('4%')}}>
                     <Pdf 
                         ref={(pdf) => {
                             this.pdf = pdf;
                         }}
                         source={source}
-                        enablePaging={true}
                         onLoadComplete={(numberOfPages) => {
                             console.log(`total page count: ${numberOfPages}`);
                         }}

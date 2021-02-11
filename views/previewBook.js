@@ -39,7 +39,7 @@ export default class userHome extends React.Component {
         })
     }
     async addBook(){
-        User.addBook(global.user,this._id,(f,r=false)=>{
+        User.addBook(this._id,(f,r=false)=>{
             if(f){
                 this.setState({biblio:true})
             }else{
@@ -50,7 +50,7 @@ export default class userHome extends React.Component {
         })
     }
     async addFavBook(){
-        User.addFavBook(global.user,this._id,(f,r=false)=>{
+        User.addFavBook(this._id,(f,r=false)=>{
             if(f){
                 this.setState({fav:true})
             }else{
@@ -61,7 +61,7 @@ export default class userHome extends React.Component {
         })
     }
     async searchBook(fn){
-        User.searchBook(global.user,this._id,(f,{favorite:fav,biblio})=>{
+        User.searchBook(this._id,(f,{favorite:fav,biblio})=>{
             if(f){
                 this.setState({fav,biblio})
                 fn();
@@ -140,7 +140,7 @@ export default class userHome extends React.Component {
                                                 buttonStyle={{backgroundColor:'#171721',width:wp('25%')}}
                                                 titleStyle={{fontSize:hp('3%')}}
                                                 title="Leer"
-                                                onPress={()=>{this.props.navigation.navigate('pdfView');}}
+                                                onPress={()=>{this.props.navigation.navigate('pdfView',{_id});}}
                                             />
                                             <Button
                                                 containerStyle={{marginTop:wp('10%')}}

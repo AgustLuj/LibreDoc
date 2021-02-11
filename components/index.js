@@ -58,8 +58,8 @@ class User{
             fn(true,data['username'])
         }
     }
-    async addBook(user,id,fn){
-        let querry = await fetch(`${pagina}/users/${user}/add/${id}`, {
+    async addBook(id,fn){
+        let querry = await fetch(`${pagina}/users/${global.user}/add/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -78,8 +78,8 @@ class User{
             }
         }
     }
-    async addFavBook(user,id,fn){
-        let querry = await fetch(`${pagina}/users/${user}/fav/${id}`, {
+    async addFavBook(id,fn){
+        let querry = await fetch(`${pagina}/users/${global.user}/fav/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -99,8 +99,25 @@ class User{
             }
         }
     }
-    async searchBook(user,id,fn){
-        let querry = await fetch(`${pagina}/users/${user}/search/${id}`, {
+    async searchBook(id,fn){
+        let querry = await fetch(`${pagina}/users/${global.user}/search/${id}`, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await querry.json();
+        if(querry.status != 200){
+            fn(false);          
+        }else{
+            //console.log(data)
+            fn(true,data);       
+        } 
+    }
+    async startRead(){
+        let querry = await fetch(`${pagina}/users/${global.user}/search/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -152,8 +169,8 @@ class Books{
             fn(true,data)
         }
     }
-    async getUsersBooks(user,type,fn){
-        let querry = await fetch((type)?`${pagina}/books/biblio/${user}`:`${pagina}/books/favs/${user}`, {
+    async getUsersBooks(type,fn){
+        let querry = await fetch((type)?`${pagina}/books/biblio/${global.user}`:`${pagina}/books/favs/${global.user}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
