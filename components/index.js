@@ -1,8 +1,6 @@
-//const pagina = 'https://adordni.herokuapp.com';
-const pagina = 'http://192.168.100.42';
 class User{
     async getData(username,pass,fn){
-        let querry = await fetch(`${pagina}/users/login`, {
+        let querry = await fetch(`${global.uri}/users/login`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
@@ -25,7 +23,7 @@ class User{
         }
     }
     async searchUser(username,fn){
-        let querry = await fetch(`${pagina}/users/search`, {
+        let querry = await fetch(`${global.uri}/users/search`, {
             method: 'POST',
             body: JSON.stringify({username}),
             headers: {
@@ -42,13 +40,15 @@ class User{
         }
     }
     async setData(username,pass,fn){
-        let querry = await fetch(`${pagina}/users/register`, {
+        let querry = await fetch(`${global.uri}/users/register`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
             }
+        }).catch((e)=>{
+            console.log(e)
         });
         
         const data = await querry.json();
@@ -59,27 +59,27 @@ class User{
         }
     }
     async addBook(id,fn){
-        let querry = await fetch(`${pagina}/users/${global.user}/add/${id}`, {
+        let querry = await fetch(`${global.uri}/users/${global.user}/add/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
             }
-        });
-        
-        const data = await querry.json();
-        if(querry.status != 200){
-            fn(false);          
-        }else{
-            if(data.biblio){
-                fn(true,true);       
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(false);          
             }else{
-                fn(false,true); 
+                if(data.biblio){
+                    fn(true,true);       
+                }else{
+                    fn(false,true); 
+                }
             }
-        }
+        }).catch(e=> fn(false));
     }
     async addFavBook(id,fn){
-        let querry = await fetch(`${pagina}/users/${global.user}/fav/${id}`, {
+        let querry = await fetch(`${global.uri}/users/${global.user}/fav/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -100,7 +100,7 @@ class User{
         }
     }
     async searchBook(id,fn){
-        let querry = await fetch(`${pagina}/users/${global.user}/search/${id}`, {
+        let querry = await fetch(`${global.uri}/users/${global.user}/search/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -117,7 +117,7 @@ class User{
         } 
     }
     async startRead(){
-        let querry = await fetch(`${pagina}/users/${global.user}/search/${id}`, {
+        let querry = await fetch(`${global.uri}/users/${global.user}/search/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -133,12 +133,10 @@ class User{
             fn(true,data);       
         } 
     }
-}
-class Books{
-    async getBooks(skip,fn){
-        let querry = await fetch(`${pagina}/books/all`, {
+    async savePage(id,pages,fn){
+        let querry = await fetch(`${global.uri}/users/${global.user}/updatePage/${id}`, {
             method: 'POST',
-            body:JSON.stringify({skip}),
+            body:JSON.stringify({pages}),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
@@ -147,14 +145,69 @@ class Books{
         
         const data = await querry.json();
         if(querry.status != 200){
-            fn(false)     
+            fn(false)
         }else{
-            fn(true,data)
-        }
+            fn(true)     
+        } 
+    }
+    async backPage(id,pages,fn){
+        let querry = await fetch(`${global.uri}/users/${global.user}/updatePage/${id}`, {
+            method: 'POST',
+            body:JSON.stringify({pages}),
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await querry.json();
+        if(querry.status != 200){
+            fn(false)
+        }else{
+            fn(true)     
+        } 
+    }
+    async getBookReading(fn){
+        let querry = await fetch(`${global.uri}/users/${global.user}/bookReading/`, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await querry.json();
+        if(querry.status != 200){
+            fn(true)
+        }else{
+            fn(false,data)     
+        } 
+    }
+}
+class Books{
+    async getBooks(skip,fn){
+        setTimeout(()=>{fn(false)},5000)
+        await fetch(`${global.uri}/books/all`, {
+            method: 'POST',
+            body:JSON.stringify({skip}),
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(false)     
+            }else{
+                fn(true,data)
+            }
+        }).catch(e=> fn(false));
+        
+        
         
     }
     async getDataBook(id,fn){
-        let querry = await fetch(`${pagina}/books/${id}/all`, {
+        let querry = await fetch(`${global.uri}/books/${id}/all`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
@@ -170,7 +223,7 @@ class Books{
         }
     }
     async getUsersBooks(type,fn){
-        let querry = await fetch((type)?`${pagina}/books/biblio/${global.user}`:`${pagina}/books/favs/${global.user}`, {
+        let querry = await fetch((type)?`${global.uri}/books/biblio/${global.user}`:`${global.uri}/books/favs/${global.user}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',

@@ -25,6 +25,9 @@ export default class userHome extends React.Component {
         this.type = this.props.route.params.type
     }
     async componentDidMount(){
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this._onRefresh()
+        });
         this._onRefresh();
     }
     _onRefresh = () => {
@@ -141,7 +144,7 @@ export default class userHome extends React.Component {
                         {Array(Math.round(this.books.length/this.rows)).fill(Math.round(this.books.length/this.rows)).map((guest,i) => {//array vacio para tener las columnas
                             return(<View style={{justifyContent: 'space-around',flexDirection: 'row',marginTop:hp('1.5%'),marginBottom:hp('1.5%')}}key={i}>
                                 {this.books.slice(b,b+this.rows).map(({_id},j)=>{//Corto el array original con el largo de las rows entre 2 y 3 de largo
-                                    let uri ='http://192.168.100.42/books/'+_id+'/foto';
+                                    let uri =global.uri+'/books/'+_id+'/foto';
                                     if(!this.three){
                                         return(
                                             <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{_id}) } key={j}>

@@ -23,6 +23,7 @@ export default class Home extends React.Component {
         });
 	}
     buttonGuest = async () =>{
+        global.type='guest';
         this.props.navigation.navigate('drawer');
     }
     buttonLogin = async () =>{

@@ -11,6 +11,8 @@ export default class App extends React.Component {
         }
     }
     async componentDidMount(){
+        global.uri='http://44.230.34.96';
+        //global.uri='http://192.168.100.42:4000';
         let cache = JSON.parse(await AsyncStorage.getItem('@Welcome'))
         if (cache == null){
             await AsyncStorage.setItem('@Welcome', JSON.stringify({welcome:true}));

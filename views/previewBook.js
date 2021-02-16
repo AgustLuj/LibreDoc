@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image,StatusBar,ScrollView, RefreshControl } from 'react-native';
+import { View, Text, Image,StatusBar,ScrollView, RefreshControl, Alert } from 'react-native';
 import {user as User ,books as Books} from '../components/index';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
@@ -11,15 +11,22 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 export default class userHome extends React.Component {
     constructor(props){
         super(props);
+        this._id=this.props.route.params._id
         this.state= {
             fav:false,
             biblio:false,
             refreshing:false
         }
         this.bookData={}
-        this._id=this.props.route.params._id
     }
     async componentDidMount(){
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        this.focusListener = this.props.navigation.addListener('focus', async() => {
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        });
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this._onRefresh()
+        });
         this._onRefresh();
     }
     _onRefresh = () => {
@@ -77,7 +84,7 @@ export default class userHome extends React.Component {
        //console.log(this.props.route)
        let {fav,biblio,refreshing} =this.state 
        let {_id}=this.props.route.params
-       let uri ='http://192.168.100.42/books/'+_id+'/foto';
+       let uri =global.uri+'/books/'+_id+'/foto';
 
         return (
             <View style={Light.container}>
@@ -140,7 +147,29 @@ export default class userHome extends React.Component {
                                                 buttonStyle={{backgroundColor:'#171721',width:wp('25%')}}
                                                 titleStyle={{fontSize:hp('3%')}}
                                                 title="Leer"
-                                                onPress={()=>{this.props.navigation.navigate('pdfView',{_id});}}
+                                                onPress={()=>{
+                                                    if(global.type != null && global.type == 'guest'){
+                                                        Alert.alert(
+                                                            "Importante",
+                                                            "No puede leer un libro siendo un invitado",
+                                                            [
+                                                              { text: "Acepto", onPress: async() => {}
+                                                                }
+                                                            ],
+                                                            { cancelable: true }
+                                                          );
+                                                    }else{
+                                                        Alert.alert(
+                                                            "Importante",
+                                                            "Considere comprar la version Fisica para apoyar al creador del libro",
+                                                            [
+                                                              { text: "Acepto", onPress: async() => {this.props.navigation.navigate('pdfView',{_id});}
+                                                                }
+                                                            ],
+                                                            { cancelable: true }
+                                                          );
+                                                        }}
+                                                    }
                                             />
                                             <Button
                                                 containerStyle={{marginTop:wp('10%')}}
