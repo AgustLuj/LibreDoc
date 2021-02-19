@@ -175,6 +175,41 @@ class User{
         }).catch(e=> fn(true));
         
     }
+    async getBookRead(fn){
+        await fetch(`${global.uri}/users/${global.user}/bookRead/`, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(true)
+            }else{
+                fn(false,data)     
+            } 
+        }).catch(e=> fn(true));
+        
+    }
+    async setVote(vote,bookId,fn){
+        await fetch(`${global.uri}/users/${global.user}/setVote/${bookId}`, {
+            method: 'POST',
+            body:JSON.stringify({vote}),
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(true)
+            }else{
+                fn(false)     
+            } 
+        }).catch(e=> fn(true));
+        
+    }
 }
 class Books{
     async getMoreBooks(skip,fn){

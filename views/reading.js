@@ -13,8 +13,9 @@ export default class Reading extends React.Component {
     constructor(props){
         super(props);
         this.state= {
+            refreshing: false
         }
-        this.books=[]
+        this.books=[];
     }
     componentDidMount(){
         this.focusListener = this.props.navigation.addListener('focus', () => {
@@ -49,7 +50,6 @@ export default class Reading extends React.Component {
     render() {
         /*
         */
-
         return (
             <View style={Light.container}>
                 <StatusBar backgroundColor='#2c2c34' />
