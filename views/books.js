@@ -32,12 +32,11 @@ export default class userHome extends React.Component {
     }
     _onRefresh = () => {
         this.setState({refreshing: true});
-        this.books = []
+        //this.books = []
         this.loadBook((err,book)=>{
             if(!err){
                 if(book.length > 0 ){
-                    this.books=book;
-                    this.skip+=10;
+                    this.books=book; 
                 }
                 this.setState({refreshing: false});
                 return null;
@@ -49,7 +48,8 @@ export default class userHome extends React.Component {
         switch(this.type){
             case 1:
                 await Books.getBooks(this.skip,(r,books)=>{
-                    if(r){
+                    if(!r){
+                        //console.log(books)
                         fn(false,books)
                     }else{
                         fn(true)
@@ -58,7 +58,7 @@ export default class userHome extends React.Component {
                 break;
             case 2:
                 await Books.getUsersBooks(true,(r,books)=>{
-                    if(r){
+                    if(!r){
                         fn(false,books)
                     }else{
                         fn(true)
@@ -67,7 +67,7 @@ export default class userHome extends React.Component {
                 break;
             case 3:
                 await Books.getUsersBooks(false,(r,books)=>{
-                    if(r){
+                    if(!r){
                         fn(false,books)
                     }else{
                         fn(true)
@@ -81,15 +81,22 @@ export default class userHome extends React.Component {
     }
     async loadMoreBook(){
         if(this.type == 1){
-            await this.loadBook((book)=>{
-                book.forEach((a)=>{
-                    let c = this.books.find(({_id})=>a._id === _id);
-                    if(c == null){
-                        this.books.push(a);
-                    }
-                })
-            });
             this.skip+=10;
+            await Books.getMoreBooks(this.skip,(r,book)=>{
+                if(!r){
+                    return new Promise(async resolve=>{
+                        for (let a of book){
+                            let c = this.books.findIndex(({_id})=>a._id === _id);
+                            if(c === -1){
+                                this.books.push(a);
+                            }
+                        }
+                        //console.log(this.books.length)
+                        resolve();
+                    })
+                    
+                }  
+            });
             this.setState({recharge:false});
         }
     }

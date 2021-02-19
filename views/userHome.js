@@ -45,7 +45,7 @@ export default class userHome extends React.Component {
     }
     async loadBook(fn){
         await Books.getBooks(this.skip,(r,books)=>{
-            if(r){
+            if(!r){
                 fn(false,books)
             }else{
                 fn(true);
@@ -53,7 +53,7 @@ export default class userHome extends React.Component {
         })
     }
     async loadMoreBook(){
-        await this.loadBook((book)=>{
+        /*await this.loadBook((book)=>{
             book.forEach((a)=>{
                 let c = this.books.find(({_id})=>a._id === _id);
                 if(c == null){
@@ -62,7 +62,7 @@ export default class userHome extends React.Component {
             })
         });
         this.skip+=10;
-        this.setState({recharge:false});
+        this.setState({recharge:false});*/
     }
     changeScale(){
         this.three=(this.three)?false:true;

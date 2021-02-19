@@ -15,7 +15,9 @@ export default class userHome extends React.Component {
         this.state= {
             fav:false,
             biblio:false,
-            refreshing:false
+            refreshing:false,
+            errg:false,
+            info:'Error Desconocido'
         }
         this.bookData={}
     }
@@ -31,23 +33,29 @@ export default class userHome extends React.Component {
     }
     _onRefresh = () => {
         this.setState({refreshing: true});
-        this.getDataBook(()=>{
-            this.searchBook(()=>{
+        this.getDataBook((e)=>{
+            if(e){
+                this.setState({errg:true,refreshing: false});
+                return null;
+            }
+            this.searchBook((e)=>{
                 this.setState({refreshing: false});
             })
         });
     }
     async getDataBook(fn){
         Books.getDataBook(this._id,(t,data)=>{
-            if(t){
+            if(!t){
                 this.bookData=data
                 fn();
+            }else{
+                fn(true)
             }
         })
     }
     async addBook(){
         User.addBook(this._id,(f,r=false)=>{
-            if(f){
+            if(!f){
                 this.setState({biblio:true})
             }else{
                 if(r){
@@ -58,7 +66,7 @@ export default class userHome extends React.Component {
     }
     async addFavBook(){
         User.addFavBook(this._id,(f,r=false)=>{
-            if(f){
+            if(!f){
                 this.setState({fav:true})
             }else{
                 if(r){
@@ -69,9 +77,11 @@ export default class userHome extends React.Component {
     }
     async searchBook(fn){
         User.searchBook(this._id,(f,{favorite:fav,biblio})=>{
-            if(f){
+            if(!f){
                 this.setState({fav,biblio})
                 fn();
+            }else{
+                fn()
             }
         })
     }
@@ -82,7 +92,7 @@ export default class userHome extends React.Component {
         /*
         */
        //console.log(this.props.route)
-       let {fav,biblio,refreshing} =this.state 
+       let {fav,biblio,refreshing,errG,info} =this.state 
        let {_id}=this.props.route.params
        let uri =global.uri+'/books/'+_id+'/foto';
 
@@ -111,6 +121,7 @@ export default class userHome extends React.Component {
                         />
                     }
                 >
+                    {(errG)?<Text style={{color:'red',fontSize:wp('4%')}}>{info}</Text>:null}
                     {(!refreshing)?
                         <View style={{flex:1}}>
                             <View style={{flex:1,flexDirection: 'column',marginTop:hp('3%')}}>
@@ -167,9 +178,9 @@ export default class userHome extends React.Component {
                                                                 }
                                                             ],
                                                             { cancelable: true }
-                                                          );
-                                                        }}
+                                                        );
                                                     }
+                                                }}
                                             />
                                             <Button
                                                 containerStyle={{marginTop:wp('10%')}}
@@ -199,5 +210,5 @@ export default class userHome extends React.Component {
                 </ScrollView>
             </View>
         )
-  }
+    }
 }

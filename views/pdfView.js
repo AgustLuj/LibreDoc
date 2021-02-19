@@ -55,7 +55,7 @@ export default class pdfView extends React.Component {
     }
     async backPage(){
         User.savePage(this.id,-15,(f)=>{
-            if(f){
+            if(!f){
                 this.props.navigation.reset({
                     index: 2,
                     routes: [{ name: 'drawer' },{ name: 'previewBook',params:{_id:this.id} },{ name: 'pdfView',params:{_id:this.id}  }],
@@ -111,9 +111,9 @@ export default class pdfView extends React.Component {
                                 this.setState({pages:this.state.pages+=1,multi:multi+=1});
                             }
                             if(pages == Math.round(numberOfPages/6)){
-                                //console.log(pages,page)
+                                console.log(pages,page)
                                 User.savePage(this.id,pages,(f)=>{
-                                    if(f){
+                                    if(!f){
                                         this.setState({pages:1});
                                     }else{
                                         this.pdf.setPage(page-2);
