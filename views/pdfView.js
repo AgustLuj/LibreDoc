@@ -108,11 +108,8 @@ export default class pdfView extends React.Component {
                                 this.setState({back:false});
                             }
                             if(multi == page && multi >=page){
-                                this.setState({pages:this.state.pages+=1,multi:multi+=1});
-                            }
-                            if(pages == Math.round(numberOfPages/6)){
-                                console.log(pages,page)
-                                User.savePage(this.id,pages,(f)=>{
+                                this.setState({multi:multi+=1});
+                                User.savePage(this.id,1,(f)=>{
                                     if(!f){
                                         this.setState({pages:1});
                                     }else{
@@ -135,7 +132,8 @@ export default class pdfView extends React.Component {
                             //console.log(scale)
                         }}
                         onError={(error) => {
-                            console.log(error);
+                            console.log(JSON.stringify(error));
+                            this.props.navigation.goBack();
                         }}
                         style={{width:Dimensions.get('window').width,height:(!screenD)?wp('100%'):hp('100%'),backgroundColor:'#2c2c34',}}/>
 

@@ -85,6 +85,15 @@ export default class userHome extends React.Component {
             }
         })
     }
+    async readAgain(fn){
+        User.readAgain(this._id,(f)=>{
+            if(!f){
+                fn(false)
+            }else{
+                fn(true)
+            }
+        })
+    }
     async componentWillUnmount(){
         this.setState({refreshing: false});
     }
@@ -170,15 +179,47 @@ export default class userHome extends React.Component {
                                                             { cancelable: true }
                                                           );
                                                     }else{
-                                                        Alert.alert(
-                                                            "Importante",
-                                                            "Considere comprar la version Fisica para apoyar al creador del libro",
-                                                            [
-                                                              { text: "Acepto", onPress: async() => {this.props.navigation.navigate('pdfView',{_id});}
+                                                        User.getFinish(_id,(e,finish)=>{
+                                                            if(!e){
+                                                                if(!finish){
+                                                                    Alert.alert(
+                                                                        "Importante",
+                                                                        "Considere comprar la version Fisica para apoyar al creador del libro",
+                                                                        [
+                                                                            { text: "Acepto", 
+                                                                                onPress: async() => {
+                                                                                    this.props.navigation.navigate('pdfView',{_id});
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        { cancelable: true }
+                                                                    );
+                                                                }else{
+                                                                    Alert.alert(
+                                                                        "Felicitaciones",
+                                                                        "Ya terminaste el libro te gustaria re leerlo o te gustaria calificarlo",
+                                                                        [
+                                                                            { text: "Calificarlo", onPress: async() => {this.props.navigation.navigate('Read')}},
+                                                                            { text: "Re leerlo", onPress: async() => {this.readAgain((e)=>{
+                                                                                if(!e)this.props.navigation.navigate('pdfView',{_id});
+                                                                            })}}
+                                                                        ],
+                                                                        { cancelable: true }
+                                                                      );
                                                                 }
-                                                            ],
-                                                            { cancelable: true }
-                                                        );
+                                                            }else{
+                                                                console.log(e,finish)
+                                                                Alert.alert(
+                                                                    "Lo siento",
+                                                                    "Ocurrio un problema vuelva a intentarlo",
+                                                                    [
+                                                                        { text: "aceptar", onPress: async() => {}},                                                                       { text: "Re leerlo", onPress: async() => {}}
+                                                                    ],
+                                                                    { cancelable: true }
+                                                                  );
+                                                            }
+                                                        })
+                                                        
                                                     }
                                                 }}
                                             />

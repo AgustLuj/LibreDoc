@@ -74,6 +74,10 @@ export default class userHome extends React.Component {
         return layoutMeasurement.height + contentOffset.y >=
           contentSize.height - paddingToBottom; 
     }
+    componentWillUnmount(){
+        var controller = new AbortController();
+        controller.abort();
+    }
     render() {
        b=0;
        const c =()=>{

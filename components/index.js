@@ -210,6 +210,49 @@ class User{
         }).catch(e=> fn(true));
         
     }
+    async getFinish(bookId,fn){
+        await fetch(`${global.uri}/users/${global.user}/getFinish/${bookId}`, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(true)
+            }else{
+                console.log(data)
+                if(data['finish']){
+                    fn(false,true);     
+                }else{
+                    fn(false,false)
+                }
+            } 
+        }).catch(e=> fn(true));
+        
+    }
+    async readAgain(bookId,fn){
+        await fetch(`${global.uri}/users/${global.user}/readAgain/${bookId}`, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+        }).then(async querry=>{
+            const data = await querry.json();
+            if(querry.status != 200){
+                fn(true)
+            }else{
+                
+                if(data['finish']){
+                    fn(false,true);     
+                }else{
+                    fn(false,false)
+                }
+            } 
+        }).catch(e=> fn(true));   
+    }  
 }
 class Books{
     async getMoreBooks(skip,fn){
