@@ -9,10 +9,10 @@
 
 ## Technologies // Tecnologias 
 A list of technologies used: // Una lista de las tecnologias usadas:
->* [Node.js](https://nodejs.org/): Version 15.4.0 
->* [React Native](https://reactnative.dev/): Version 0.63.4
->* [Express.js](https://expressjs.com/): Version 4.17.1
->* [MongoDD-Mongoose](https://mongoosejs.com/): Version 5.10.13
+* [Node.js](https://nodejs.org/): Version 15.4.0 
+* [React Native](https://reactnative.dev/): Version 0.63.4
+* [Express.js](https://expressjs.com/): Version 4.17.1
+* [MongoDD-Mongoose](https://mongoosejs.com/): Version 5.10.13
 
 ## Server // Servidor 
 **Spanish** 
