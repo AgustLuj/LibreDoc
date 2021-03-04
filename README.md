@@ -14,7 +14,7 @@ A list of technologies used: // Una lista de las tecnologias usadas:
 >* [Express.js](https://expressjs.com/): Version 4.17.1
 >* [MongoDD-Mongoose](https://mongoosejs.com/): Version 5.10.13
 
->#### Server // Servidor 
+#### Server // Servidor 
 **Spanish** 
 >El servidor esta alojado en [Amazon Web Service](https://aws.amazon.com/es/) con certificado ssl para que funcione en todos los celulares.
 >El servidor de MongoDB estan en [Mongo atlas](https://www.mongodb.com/cloud/atlas) para una mayor facilidad de usar 
