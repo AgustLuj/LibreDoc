@@ -34,6 +34,7 @@ A list of technologies used: // Una lista de las tecnologias usadas:
 
 ## **Screenshots // Capturas** <a name = "screens"></a>
 ### Welcome screens // Pantallas de bienvenida
+<img src="https://user-images.githubusercontent.com/26339240/109908470-17fdc880-7c83-11eb-8593-e76b6aef29d4.png" alt="alt text" style="width:400;height:800">
 ![Screenshot_1614829369](https://user-images.githubusercontent.com/26339240/109908470-17fdc880-7c83-11eb-8593-e76b6aef29d4.png)
 ![Screenshot_1614829397](https://user-images.githubusercontent.com/26339240/109908478-1d5b1300-7c83-11eb-923e-818d46118256.png)
 ![Screenshot_1614829401](https://user-images.githubusercontent.com/26339240/109908493-23e98a80-7c83-11eb-91a7-be752da13b7a.png)
