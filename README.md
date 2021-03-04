@@ -7,7 +7,7 @@
 **English**
 >The idea was simple, develop an application to read books online, but it ended up being a super complete and intuitive application.
 
->#### Technologies // Tecnologias 
+#### Technologies // Tecnologias 
 A list of technologies used: // Una lista de las tecnologias usadas:
 >* [Node.js](https://nodejs.org/): Version 15.4.0 
 >* [React Native](https://reactnative.dev/): Version 0.63.4
