@@ -1,7 +1,19 @@
 # LibreDoc
 *English // Spanish*
 
-## A simple idea // Una idea simple
+## 📝 Table of Contents // Tabla de contenidos
+
+- [A simple idea // Una idea simple](#idea)
+- [Technologies // Tecnologias](#Technologies)
+- [Server // Servidor](#Server)
+- [Screenshots // Capturas](#screens)
+- [Built Using](#built_using)
+-- [TODO](../TODO.md)
+- [Contributing](../CONTRIBUTING.md)
+- [Authors](#authors)
+- [Acknowledgments](#acknowledgement)
+
+## A simple idea // Una idea simple <a name = "idea"></a>
 
 **Spanish** 
 >La idea era simple, crear una aplicacion para leer libros de manera online, pero termino siendo una aplicacion super completa e intuitiva.
@@ -9,14 +21,14 @@
 **English**
 >The idea was simple, develop an application to read books online, but it ended up being a super complete and intuitive application.
 
-## Technologies // Tecnologias 
+## Technologies // Tecnologias <a name = "Technologies"></a>
 A list of technologies used: // Una lista de las tecnologias usadas:
 * [Node.js](https://nodejs.org/): Version 15.4.0 
 * [React Native](https://reactnative.dev/): Version 0.63.4
 * [Express.js](https://expressjs.com/): Version 4.17.1
 * [MongoDD-Mongoose](https://mongoosejs.com/): Version 5.10.13
 
-## Server // Servidor 
+## Server // Servidor <a name = "Server"></a>
 **Spanish** 
 >El servidor esta alojado en [Amazon Web Service](https://aws.amazon.com/es/) con certificado ssl para que funcione en todos los celulares.
 >El servidor de MongoDB estan en [Mongo atlas](https://www.mongodb.com/cloud/atlas) para una mayor facilidad de usar 
@@ -25,7 +37,7 @@ A list of technologies used: // Una lista de las tecnologias usadas:
 >The server is hosted on [Amazon Web Service](https://aws.amazon.com/es/) with ssl certificate to work on all cell phones.
 >The MongoDB server is on [Mongo atlas](https://www.mongodb.com/cloud/atlas) for ease of use.
 
-## Screenshots // Capturas
+## Screenshots // Capturas <a name = "screens"></a>
 ### Welcome screens // Pantallas de bienvenida
 ![Screenshot_1614829369](https://user-images.githubusercontent.com/26339240/109908470-17fdc880-7c83-11eb-8593-e76b6aef29d4.png)
 ![Screenshot_1614829397](https://user-images.githubusercontent.com/26339240/109908478-1d5b1300-7c83-11eb-923e-818d46118256.png)
@@ -34,8 +46,8 @@ A list of technologies used: // Una lista de las tecnologias usadas:
 ![Screenshot_1614829405](https://user-images.githubusercontent.com/26339240/109908495-251ab780-7c83-11eb-99f9-46a838878594.png)
 ![Screenshot_1614829407](https://user-images.githubusercontent.com/26339240/109908736-8e022f80-7c83-11eb-9f2d-0b9407240ca5.png)
 ![Screenshot_1614829410](https://user-images.githubusercontent.com/26339240/109908739-8e9ac600-7c83-11eb-8a25-67a6be3e0b30.png)
-La patanlla de invitados directamente entra en la aplicacion pero con muy pocas opciones. // 
-The guest panel directly enters the application but with very few options.
+The guest panel directly enters the application but with very few options. // 
+La patanlla de invitados directamente entra en la aplicacion pero con muy pocas opciones.
 ![Screenshot_1614829427](https://user-images.githubusercontent.com/26339240/109908752-93f81080-7c83-11eb-9727-644f0a99acad.png)
 ### User Screen // Pantallas del usuario
 Main screen where the top 10 books are listed //
