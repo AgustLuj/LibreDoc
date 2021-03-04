@@ -29,7 +29,7 @@ export default class Login extends React.Component {
 	}
     buttonLogin = async () =>{
         await Keyboard.dismiss();
-        this.setState({errU:false,errG:false})
+        this.setState({errU:false,errG:false});
         if(this.name.length >=4 && this.pass.length >=4 ){
             await User.getData(this.name,this.pass,async(err,data)=>{
                 if(err){
@@ -64,41 +64,46 @@ export default class Login extends React.Component {
     buttonRegister = async ()=>{
         await Keyboard.dismiss();
         this.setState({errU:false,errG:false})
-        if(this.name.length >=4 && this.pass.length >=4 ){
-            await User.searchUser(this.name,async (u)=>{
-                if(!u){
-                    await User.setData(this.name,this.pass,(f)=>{
-                        if(!f){
-                            Alert.alert(
-                                "Importante",
-                                "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
-                                [
-                                  { text: "Acepto", onPress: async() => {
-                                    global.user=this.name;
-                                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
-                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
-                                    this.props.navigation.reset({
-                                        index: 0,
-                                        routes: [{ name: 'drawer', }],
-                                      });} }
-                                ],
-                                { cancelable: true }
-                              );
-                        }else{
-                            this.setState({errG:true});        
-                        }
-                    })
-                    
-                }else{
-                    this.setState({errU:true,info:'El usuario ingresado ya esta en uso'})
-                }
-            })
+        if(this.name.split(' ').length>1){
+            this.setState({errU:true,info:'El usuario ingresado tiene un espacio'});
+            return null;
         }else{
-            if(this.name.length <4){
-                this.setState({errU:true,info:'El usuario ingresado es muy corto'})
-            }
-            if(this.pass.length <6){
-                this.setState({errP:true,info2:'La contraseña ingresado es muy corta'})
+            if(this.name.length >=4 && this.pass.length >=4 ){
+                await User.searchUser(this.name,async (u)=>{
+                    if(!u){
+                        await User.setData(this.name,this.pass,(f)=>{
+                            if(!f){
+                                Alert.alert(
+                                    "Importante",
+                                    "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
+                                    [
+                                      { text: "Acepto", onPress: async() => {
+                                        global.user=this.name;
+                                        await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                                        await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
+                                        this.props.navigation.reset({
+                                            index: 0,
+                                            routes: [{ name: 'drawer', }],
+                                          });} }
+                                    ],
+                                    { cancelable: true }
+                                  );
+                            }else{
+                                this.setState({errG:true});        
+                            }
+                        })
+                        
+                    }else{
+                        this.setState({errU:true,info:'El usuario ingresado ya esta en uso'})
+                    }
+                })
+            }else{
+                if(this.name.length <4){
+                    this.setState({errU:true,info:'El usuario ingresado es muy corto'})
+                }
+                if(this.pass.length <6){
+                    this.setState({errP:true,info2:'La contraseña ingresado es muy corta'})
+                }
             }
         }
     }
