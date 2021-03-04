@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image,StatusBar,ScrollView, RefreshControl } from 'react-native';
+import { View, Text, Image,StatusBar,ScrollView, RefreshControl, Alert } from 'react-native';
 import {user as User ,books as Books} from '../components/index';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {Light} from '../style/general';
@@ -11,36 +11,51 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 export default class userHome extends React.Component {
     constructor(props){
         super(props);
+        this._id=this.props.route.params._id
         this.state= {
             fav:false,
             biblio:false,
-            refreshing:false
+            refreshing:false,
+            errg:false,
+            info:'Error Desconocido'
         }
         this.bookData={}
-        this._id=this.props.route.params._id
     }
     async componentDidMount(){
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        this.focusListener = this.props.navigation.addListener('focus', async() => {
+            await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+        });
+        this.focusListener = this.props.navigation.addListener('focus', () => {
+            this._onRefresh()
+        });
         this._onRefresh();
     }
     _onRefresh = () => {
         this.setState({refreshing: true});
-        this.getDataBook(()=>{
-            this.searchBook(()=>{
+        this.getDataBook((e)=>{
+            if(e){
+                this.setState({errg:true,refreshing: false});
+                return null;
+            }
+            this.searchBook((e)=>{
                 this.setState({refreshing: false});
             })
         });
     }
     async getDataBook(fn){
         Books.getDataBook(this._id,(t,data)=>{
-            if(t){
+            if(!t){
                 this.bookData=data
                 fn();
+            }else{
+                fn(true)
             }
         })
     }
     async addBook(){
-        User.addBook(global.user,this._id,(f,r=false)=>{
-            if(f){
+        User.addBook(this._id,(f,r=false)=>{
+            if(!f){
                 this.setState({biblio:true})
             }else{
                 if(r){
@@ -50,8 +65,8 @@ export default class userHome extends React.Component {
         })
     }
     async addFavBook(){
-        User.addFavBook(global.user,this._id,(f,r=false)=>{
-            if(f){
+        User.addFavBook(this._id,(f,r=false)=>{
+            if(!f){
                 this.setState({fav:true})
             }else{
                 if(r){
@@ -61,10 +76,21 @@ export default class userHome extends React.Component {
         })
     }
     async searchBook(fn){
-        User.searchBook(global.user,this._id,(f,{favorite:fav,biblio})=>{
-            if(f){
+        User.searchBook(this._id,(f,{favorite:fav,biblio})=>{
+            if(!f){
                 this.setState({fav,biblio})
                 fn();
+            }else{
+                fn()
+            }
+        })
+    }
+    async readAgain(fn){
+        User.readAgain(this._id,(f)=>{
+            if(!f){
+                fn(false)
+            }else{
+                fn(true)
             }
         })
     }
@@ -75,9 +101,9 @@ export default class userHome extends React.Component {
         /*
         */
        //console.log(this.props.route)
-       let {fav,biblio,refreshing} =this.state 
+       let {fav,biblio,refreshing,errG,info} =this.state 
        let {_id}=this.props.route.params
-       let uri ='http://192.168.100.42/books/'+_id+'/foto';
+       let uri =global.uri+'/books/'+_id+'/foto';
 
         return (
             <View style={Light.container}>
@@ -104,6 +130,7 @@ export default class userHome extends React.Component {
                         />
                     }
                 >
+                    {(errG)?<Text style={{color:'red',fontSize:wp('4%')}}>{info}</Text>:null}
                     {(!refreshing)?
                         <View style={{flex:1}}>
                             <View style={{flex:1,flexDirection: 'column',marginTop:hp('3%')}}>
@@ -140,7 +167,61 @@ export default class userHome extends React.Component {
                                                 buttonStyle={{backgroundColor:'#171721',width:wp('25%')}}
                                                 titleStyle={{fontSize:hp('3%')}}
                                                 title="Leer"
-                                                onPress={()=>{this.props.navigation.navigate('pdfView');}}
+                                                onPress={()=>{
+                                                    if(global.type != null && global.type == 'guest'){
+                                                        Alert.alert(
+                                                            "Importante",
+                                                            "No puede leer un libro siendo un invitado",
+                                                            [
+                                                              { text: "Acepto", onPress: async() => {}
+                                                                }
+                                                            ],
+                                                            { cancelable: true }
+                                                          );
+                                                    }else{
+                                                        User.getFinish(_id,(e,finish)=>{
+                                                            if(!e){
+                                                                if(!finish){
+                                                                    Alert.alert(
+                                                                        "Importante",
+                                                                        "Considere comprar la version Fisica para apoyar al creador del libro",
+                                                                        [
+                                                                            { text: "Acepto", 
+                                                                                onPress: async() => {
+                                                                                    this.props.navigation.navigate('pdfView',{_id});
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        { cancelable: true }
+                                                                    );
+                                                                }else{
+                                                                    Alert.alert(
+                                                                        "Felicitaciones",
+                                                                        "Ya terminaste el libro te gustaria re leerlo o te gustaria calificarlo",
+                                                                        [
+                                                                            { text: "Calificarlo", onPress: async() => {this.props.navigation.navigate('Read')}},
+                                                                            { text: "Re leerlo", onPress: async() => {this.readAgain((e)=>{
+                                                                                if(!e)this.props.navigation.navigate('pdfView',{_id});
+                                                                            })}}
+                                                                        ],
+                                                                        { cancelable: true }
+                                                                      );
+                                                                }
+                                                            }else{
+                                                                console.log(e,finish)
+                                                                Alert.alert(
+                                                                    "Lo siento",
+                                                                    "Ocurrio un problema vuelva a intentarlo",
+                                                                    [
+                                                                        { text: "aceptar", onPress: async() => {}},                                                                       { text: "Re leerlo", onPress: async() => {}}
+                                                                    ],
+                                                                    { cancelable: true }
+                                                                  );
+                                                            }
+                                                        })
+                                                        
+                                                    }
+                                                }}
                                             />
                                             <Button
                                                 containerStyle={{marginTop:wp('10%')}}
@@ -170,5 +251,5 @@ export default class userHome extends React.Component {
                 </ScrollView>
             </View>
         )
-  }
+    }
 }

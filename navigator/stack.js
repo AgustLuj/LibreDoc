@@ -102,6 +102,7 @@ function CustomDrawerContent(props) {
             onPress={async() => {
                 global.login=false;
                 delete global.user;
+                delete global.type;
                 await AsyncStorage.removeItem('@User');
                 await AsyncStorage.setItem('@Login', JSON.stringify({login:false}));
                 props.navigation.reset({
@@ -123,12 +124,13 @@ class drawerScreen extends Component{
 		}
     }
 	async componentDidMount(){
-
+       // console.log(global.type)
 	}
     render(){
         /*
         <Drawer.Screen name="Config" label='Configuracion' component={Routes.userHome}options={{drawerLabel:'Configuracion'}}/>
         */
+       
 		return (
             <Drawer.Navigator 
                 drawerContentOptions={{
@@ -149,14 +151,13 @@ class drawerScreen extends Component{
                     }
                 }} 
                 drawerContent={props => <CustomDrawerContent {...props} />}
-              
             >
 			<Drawer.Screen name="BestSellers" component={Routes.userHome} options={{drawerLabel:'Mas Leidos'}}/>
             <Drawer.Screen name="Books" component={Routes.Books} initialParams={{ type: 1 }} options={{drawerLabel:'Libros'}}/>
-            <Drawer.Screen name="Biblio" component={Routes.Books} initialParams={{ type: 2 }} options={{drawerLabel:'Biblioteca'}}/>
-            <Drawer.Screen name="favorites" label='Favoritos' initialParams={{ type: 3 }} component={Routes.Books} options={{drawerLabel:'Favoritos'}}/>
-            <Drawer.Screen name="Reading" label='En lectura' component={Routes.Reading} options={{drawerLabel:'En lectura'}}/>
-            <Drawer.Screen name="Read" label='Leidos' component={Routes.Read}options={{drawerLabel:'Leidos'}}/>
+            {(global.type != 'guest')?<Drawer.Screen name="Biblio" component={Routes.Books} initialParams={{ type: 2 }} options={{drawerLabel:'Biblioteca'}}/>:null}
+            {(global.type != 'guest')?<Drawer.Screen name="favorites" label='Favoritos' initialParams={{ type: 3 }} component={Routes.Books} options={{drawerLabel:'Favoritos'}}/>:null}
+            {(global.type != 'guest')?<Drawer.Screen name="Reading" label='En lectura' component={Routes.Reading} options={{drawerLabel:'En lectura'}}/>:null}
+            {(global.type != 'guest')?<Drawer.Screen name="Read" label='Leidos' component={Routes.Read}options={{drawerLabel:'Leidos'}}/>:null}
 			</Drawer.Navigator>
 		);
 	}

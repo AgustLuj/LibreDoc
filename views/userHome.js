@@ -33,19 +33,27 @@ export default class userHome extends React.Component {
     _onRefresh = () => {
         this.setState({refreshing: true});
         this.books = []
-        this.loadBook((book)=>{
-            this.books=book;
-            this.skip+=10;
-            this.setState({refreshing: false});
+        this.loadBook((e,book)=>{
+            if(!e){
+                this.books=book;
+                this.skip+=10;
+                this.setState({refreshing: false});
+            }else{
+                this.setState({refreshing: false});
+            }
         });
     }
     async loadBook(fn){
         await Books.getBooks(this.skip,(r,books)=>{
-            fn(books)
+            if(!r){
+                fn(false,books)
+            }else{
+                fn(true);
+            }
         })
     }
     async loadMoreBook(){
-        await this.loadBook((book)=>{
+        /*await this.loadBook((book)=>{
             book.forEach((a)=>{
                 let c = this.books.find(({_id})=>a._id === _id);
                 if(c == null){
@@ -54,7 +62,7 @@ export default class userHome extends React.Component {
             })
         });
         this.skip+=10;
-        this.setState({recharge:false});
+        this.setState({recharge:false});*/
     }
     changeScale(){
         this.three=(this.three)?false:true;
@@ -65,6 +73,10 @@ export default class userHome extends React.Component {
         const paddingToBottom = 0.05;
         return layoutMeasurement.height + contentOffset.y >=
           contentSize.height - paddingToBottom; 
+    }
+    componentWillUnmount(){
+        var controller = new AbortController();
+        controller.abort();
     }
     render() {
        b=0;
@@ -103,10 +115,10 @@ export default class userHome extends React.Component {
                     }}
                 >
                     <View style={{ justifyContent: 'space-around',flexDirection: 'column',}}>
-                        {Array(this.books.length/this.rows).fill(this.books.length/this.rows).map((guest,i) => {//array vacio para tener las columnas
+                    {Array(Math.round(this.books.length/this.rows)).fill(Math.round(this.books.length/this.rows)).map((guest,i) => {//array vacio para tener las columnas
                             return(<View style={{justifyContent: 'space-around',flexDirection: 'row',marginTop:hp('1.5%'),marginBottom:hp('1.5%')}}key={i}>
                                 {this.books.slice(b,b+this.rows).map(({_id},j)=>{//Corto el array original con el largo de las rows entre 2 y 3 de largo
-                                    let uri ='http://192.168.100.42/books/'+_id+'/foto';
+                                    let uri =global.uri+'/books/'+_id+'/foto';
                                     if(!this.three){
                                         return(
                                             <TouchableOpacity  onPress={() => this.props.navigation.navigate('previewBook',{_id}) } key={j}>

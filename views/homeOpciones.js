@@ -23,7 +23,11 @@ export default class Home extends React.Component {
         });
 	}
     buttonGuest = async () =>{
-        this.props.navigation.navigate('drawer');
+        global.type='guest';
+        this.props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'drawer', }],
+        })
     }
     buttonLogin = async () =>{
         this.props.navigation.navigate('Login',{'login':true})
@@ -55,7 +59,7 @@ export default class Home extends React.Component {
                         buttonStyle={{backgroundColor:'#171721',width:hp('25%')}}
                         titleStyle={{fontSize:hp('3%')}}
                         title="Invitado"
-                        onPress={()=>this.buttonGuest()}
+                        onPress={()=>{this.buttonGuest()}/**/}
                     />        
                 </View>
             </View>
