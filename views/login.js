@@ -33,21 +33,19 @@ export default class Login extends React.Component {
         if(this.name.length >=4 && this.pass.length >=4 ){
             await User.getData(this.name,this.pass,async(err,data)=>{
                 if(err){
-                    if(data.login !== undefined && !data.login){
-                        this.setState({errU:true,info:'El usuario o contraseña ingresado es incorrecto'})
-                        return null;
-                    }
-                    this.setState({errG:true});
+                    this.setState({errG:true,info:data.msg})
+                    return null;
                 }else{
-                    if(data){
-                        global.user=this.name;
-                        await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
-                        await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
-                        this.props.navigation.reset({
-                            index: 0,
-                            routes: [{ name: 'drawer', }],
-                          })
-                    }
+                    global.user=this.name;
+                    global.token = data.token;
+                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
+                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                    
+                    this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'drawer', }],
+                        })
                 }
             })
         }else{
@@ -69,32 +67,30 @@ export default class Login extends React.Component {
             return null;
         }else{
             if(this.name.length >=4 && this.pass.length >=4 ){
-                await User.searchUser(this.name,async (u)=>{
-                    if(!u){
-                        await User.setData(this.name,this.pass,(f)=>{
-                            if(!f){
-                                Alert.alert(
-                                    "Importante",
-                                    "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
-                                    [
-                                      { text: "Acepto", onPress: async() => {
-                                        global.user=this.name;
-                                        await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
-                                        await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));  
-                                        this.props.navigation.reset({
-                                            index: 0,
-                                            routes: [{ name: 'drawer', }],
-                                          });} }
-                                    ],
-                                    { cancelable: true }
-                                  );
-                            }else{
-                                this.setState({errG:true});        
-                            }
-                        })
-                        
+                await User.setData(this.name,this.pass,(f,data)=>{
+                    if(!f){
+                        Alert.alert(
+                            "Importante",
+                            "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
+                            [
+                                { text: "Acepto", onPress: async() => {
+
+                                    global.user=this.name;
+                                    global.token = data.token;
+                                    console.log(data.token)
+                                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
+                                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                                    this.props.navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'drawer', }],
+                                    });} 
+                                }
+                            ],
+                            { cancelable: true }
+                            );
                     }else{
-                        this.setState({errU:true,info:'El usuario ingresado ya esta en uso'})
+                        this.setState({errG:true,info:data.msg});        
                     }
                 })
             }else{

@@ -11,8 +11,8 @@ export default class App extends React.Component {
         }
     }
     async componentDidMount(){
-        global.uri='https://adordni.ml';
-        //global.uri='http://192.168.100.42:4000';
+        //global.uri='https://adordni.ml';
+        global.uri='http://192.168.100.42';
         let cache = JSON.parse(await AsyncStorage.getItem('@Welcome'))
         if (cache == null){
             await AsyncStorage.setItem('@Welcome', JSON.stringify({welcome:true}));
@@ -31,6 +31,13 @@ export default class App extends React.Component {
         let cache3 = JSON.parse(await AsyncStorage.getItem('@User'))
         if(cache3 != null){
             global.user=cache3.name
+        }
+        let tok = JSON.parse(await AsyncStorage.getItem('@Token'));
+        if(!tok){
+            await AsyncStorage.setItem('@Login', JSON.stringify({login:false}));
+            global.login=false;
+        }else{
+            global.token = tok.token;
         }
         this.setState({enable:true});
     }

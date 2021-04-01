@@ -1,23 +1,19 @@
 class User{
     async getData(username,pass,fn){
-        await fetch(`${global.uri}/users/login`, {
+        await fetch(`${global.uri}/auth/login`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
               Accept: 'application/json',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             }
         }).then(async querry=>{
             const data = await querry.json();
             if(querry.status != 200){
-                if(data['err']){
-                    fn(true,data);
-                }else if(!data['login']){
-                    fn(true,data);
-                }   
+                fn(true,data);  
             }else{
                 if(data['login']){
-                    fn(false,true)
+                    fn(false,data)
                 }
             }
         }).catch(e=> fn(true,e)); 
@@ -25,25 +21,8 @@ class User{
         /*
         }*/
     }
-    async searchUser(username,fn){
-        await fetch(`${global.uri}/users/search`, {
-            method: 'POST',
-            body: JSON.stringify({username}),
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true);            
-            }else{
-                fn(false);
-            }
-        }).catch(e=> fn(true)); 
-    }
     async setData(username,pass,fn){
-        await fetch(`${global.uri}/users/register`, {
+        await fetch(`${global.uri}/auth/register`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
@@ -53,9 +32,10 @@ class User{
         }).then(async querry=>{
             const data = await querry.json();
             if(querry.status != 200){
-                fn(true);
+                let {errors}=data;
+                fn(true,errors[0]);
             }else{
-                fn(false,data['username'])
+                fn(false,data)
             }
         }).catch(e=> fn(true)); 
         
