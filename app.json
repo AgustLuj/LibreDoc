@@ -8,5 +8,9 @@
     "assetBundlePatterns": [
       "**/*"
     ]
+  },
+  "android": {
+    "package": "com.libredoc",
+    "googleServicesFile": "./android/app/google-services.json"
   }
 }

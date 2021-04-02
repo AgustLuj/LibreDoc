@@ -40,12 +40,12 @@ export default class Login extends React.Component {
                     global.token = data.token;
                     await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
                     await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                    await AsyncStorage.setItem('@Token',JSON.stringify({token:data.token}));
                     
                     this.props.navigation.reset({
                         index: 0,
                         routes: [{ name: 'drawer', }],
-                        })
+                    })
                 }
             })
         }else{
@@ -80,7 +80,7 @@ export default class Login extends React.Component {
                                     console.log(data.token)
                                     await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
                                     await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                                    await AsyncStorage.setItem('@Token',JSON.stringify({token:data.token}));
                                     this.props.navigation.reset({
                                         index: 0,
                                         routes: [{ name: 'drawer', }],
