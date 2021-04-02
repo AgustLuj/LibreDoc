@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage  from '@react-native-async-storage/async-storage';
 import {GoogleSignin,GoogleSigninButton} from '@react-native-google-signin/google-signin';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {user as User} from '../components/index';
 
 import {Light} from '../style/general';
 
@@ -42,14 +43,14 @@ export default class Home extends React.Component {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             try {
-                let {username,token} = await this.sendIdToken(userInfo.idToken);
+                let {username,token,_id} = await User.sendIdToken(userInfo.idToken);
 
-                    global.user= username;
+                    global.user={username,_id};
                     global.token = token;
-
-                    await AsyncStorage.setItem('@User', JSON.stringify({name:username}));
+                    console.log(global.user.username)
+                    await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
                     await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                    await AsyncStorage.setItem('@Token',JSON.stringify({token:token}));
                     
                     this.props.navigation.reset({
                         index: 0,
@@ -73,26 +74,7 @@ export default class Home extends React.Component {
         } catch (error) {
           console.error(error);
         }
-      };
-    sendIdToken = async(idToken) =>{
-        const querry = await fetch(`http://192.168.100.42/auth/google/`, {
-          method: 'POST',
-          body: JSON.stringify({idToken}),
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-        //console.log('data');
-        const data = await querry.json();
-        if(querry.status != 200){
-    
-          throw new Error('No pasa');
-    
-        }else{
-            return data
-        }
-      }
+    };
     buttonLogin = async () =>{
         this.props.navigation.navigate('Login',{'login':true})
     }

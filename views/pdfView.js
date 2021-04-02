@@ -16,7 +16,7 @@ export default class pdfView extends React.Component {
         super(props);
         this.id =this.props.route.params._id
         this.state= {
-            source:{uri:`${global.uri}/users/${global.user}/read/${this.id}`,cache:false},
+            source:{uri:`${global.uri}/users/${global.user.username}/read/${this.id}`,cache:false,headers:{'x-token':global.token}},
             width:Dimensions.get('window').width,
             height:Dimensions.get('window').height,
             next:false,

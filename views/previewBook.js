@@ -54,24 +54,20 @@ export default class userHome extends React.Component {
         })
     }
     async addBook(){
-        User.addBook(this._id,(f,r=false)=>{
-            if(!f){
-                this.setState({biblio:true})
+        User.addBook(this._id,(e,r=false)=>{
+            if(e){
+                this.setState({biblio:false})
             }else{
-                if(r){
-                    this.setState({biblio:false})
-                }
+                this.setState({biblio:r})
             }
         })
     }
     async addFavBook(){
-        User.addFavBook(this._id,(f,r=false)=>{
-            if(!f){
-                this.setState({fav:true})
+        User.addFavBook(this._id,(e,r=false)=>{
+            if(e){
+                this.setState({fav:false})
             }else{
-                if(r){
-                    this.setState({fav:false})
-                }
+                this.setState({fav:r})
             }
         })
     }
@@ -208,7 +204,6 @@ export default class userHome extends React.Component {
                                                                       );
                                                                 }
                                                             }else{
-                                                                console.log(e,finish)
                                                                 Alert.alert(
                                                                     "Lo siento",
                                                                     "Ocurrio un problema vuelva a intentarlo",

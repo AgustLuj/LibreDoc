@@ -36,11 +36,12 @@ export default class Login extends React.Component {
                     this.setState({errG:true,info:data.msg})
                     return null;
                 }else{
-                    global.user=this.name;
-                    global.token = data.token;
-                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
+                    let {token,username,_id}=data
+                    global.user={username,_id};
+                    global.token = token;
+                    await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
                     await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                    await AsyncStorage.setItem('@Token',JSON.stringify({token:data.token}));
+                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
                     
                     this.props.navigation.reset({
                         index: 0,
@@ -75,12 +76,12 @@ export default class Login extends React.Component {
                             [
                                 { text: "Acepto", onPress: async() => {
 
-                                    global.user=this.name;
-                                    global.token = data.token;
-                                    console.log(data.token)
-                                    await AsyncStorage.setItem('@User', JSON.stringify({name:this.name}));
-                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                                    await AsyncStorage.setItem('@Token',JSON.stringify({token:data.token}));
+                                    let {token,username,_id}=data
+                                    global.user={username,_id};
+                                    global.token = token;
+                                    await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
+                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true})); 
+                                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
                                     this.props.navigation.reset({
                                         index: 0,
                                         routes: [{ name: 'drawer', }],
@@ -135,7 +136,6 @@ export default class Login extends React.Component {
                                 size={24}
                                 color='white'
                               />}
-                            keyboardType='numeric'
                             style={{color:'white'}}
                             errorMessage={(errP)?info2:null}
                             errorStyle={{fontSize:wp('3.5%')}}

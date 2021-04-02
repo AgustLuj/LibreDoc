@@ -30,7 +30,8 @@ export default class App extends React.Component {
         }
         let cache3 = JSON.parse(await AsyncStorage.getItem('@User'))
         if(cache3 != null){
-            global.user=cache3.name
+            let {username,_id}=cache3
+            global.user={username,_id};
         }
         let tok = JSON.parse(await AsyncStorage.getItem('@Token'));
         if(!tok){
