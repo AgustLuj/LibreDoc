@@ -25,73 +25,120 @@ export default class userHome extends React.Component {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
         this.focusListener = this.props.navigation.addListener('focus', async() => {
             await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-        });
-        this.focusListener = this.props.navigation.addListener('focus', () => {
-            this._onRefresh()
+            this._onRefresh();
         });
         this._onRefresh();
     }
-    _onRefresh = () => {
+    _onRefresh = async() => {
         this.setState({refreshing: true});
-        this.getDataBook((e)=>{
-            if(e){
-                this.setState({errg:true,refreshing: false});
-                return null;
-            }
-            this.searchBook((e)=>{
-                this.setState({refreshing: false});
-            })
-        });
+        try {
+            let data = await Books.getDataBook(this._id)
+            this.bookData=data
+            
+            let {favorite:fav,biblio} = await User.searchBook(this._id);
+            this.setState({fav,biblio})
+
+            this.setState({refreshing: false});
+
+        } catch (error) {
+            this.setState({refreshing: true});
+            Alert.alert(
+                "Importante",
+                "Ocurrio un problema vuelva a internarlo o contacte al administrador",
+                [
+                    { text: "Acepto", onPress: () => this.props.navigation.goBack() }
+                ],
+                { cancelable: true }
+            );
+            return null;
+        }
+        return null;
     }
-    async getDataBook(fn){
-        Books.getDataBook(this._id,(t,data)=>{
-            if(!t){
-                this.bookData=data
-                fn();
-            }else{
-                fn(true)
-            }
-        })
+    addBook = async()=>{
+        try {
+            let biblio = await User.addBook(this._id);
+            this.setState({biblio})
+        } catch (error) {
+            console.log(error);
+            this.setState({biblio:false}) 
+        }
     }
-    async addBook(){
-        User.addBook(this._id,(e,r=false)=>{
-            if(e){
-                this.setState({biblio:false})
-            }else{
-                this.setState({biblio:r})
-            }
-        })
+    addFavBook = async() =>{
+        try {
+            let fav = await User.addFavBook(this._id);
+            this.setState({fav})
+        } catch (error) {
+            console.log(error);
+            this.setState({fav:false})
+        }
     }
-    async addFavBook(){
-        User.addFavBook(this._id,(e,r=false)=>{
-            if(e){
-                this.setState({fav:false})
-            }else{
-                this.setState({fav:r})
-            }
-        })
+    errAlert = ()=>{
+        Alert.alert(
+            "Lo siento",
+            "Ocurrio un problema vuelva a intentarlo",
+            [
+                { text: "aceptar", onPress: async() => {}}
+            ],
+            { cancelable: true }
+        );
     }
-    async searchBook(fn){
-        User.searchBook(this._id,(f,{favorite:fav,biblio})=>{
-            if(!f){
-                this.setState({fav,biblio})
-                fn();
-            }else{
-                fn()
-            }
-        })
+    readButton = async()=>{
+        if(global.type != null && global.type == 'guest'){
+            Alert.alert(
+                "Importante",
+                "No puede leer un libro siendo un invitado",
+                [
+                  { text: "Acepto", onPress: async() => {}
+                    }
+                ],
+                { cancelable: true }
+              );
+        }else{
+            try {
+                let {finish} = await User.getFinish(this._id);
+                if(!finish){
+                    Alert.alert(
+                        "Importante",
+                        "Considere comprar la version Fisica para apoyar al creador del libro",
+                        [
+                            { text: "Acepto", 
+                                onPress: async() => {
+                                    this.props.navigation.navigate('pdfView',{_id:this._id});
+                                }
+                            }
+                        ],
+                        { cancelable: true }
+                    );
+                }else{
+                    Alert.alert(
+                        "Felicitaciones",
+                        "Ya terminaste el libro te gustaria re leerlo o te gustaria calificarlo",
+                        [
+                            { text: "Calificarlo", onPress: async() => {this.props.navigation.navigate('Read')}},
+                            { text: "Re leerlo", onPress: async() => {
+                                try {
+                                    await User.readAgain(this._id);
+                                    this.props.navigation.navigate('pdfView',{_id:this._id});
+                                } catch (error) {
+                                    return this.errAlert();
+                                }
+                            }}
+                        ],
+                        { cancelable: true }
+                      );
+                }
+            } catch (error) {
+                this.errAlert();
+            }            
+        }
     }
-    async readAgain(fn){
-        User.readAgain(this._id,(f)=>{
-            if(!f){
-                fn(false)
-            }else{
-                fn(true)
-            }
-        })
-    }
-    async componentWillUnmount(){
-        this.setState({refreshing: false});
+    componentWillUnmount(){
+        try {
+            this.focusListener();
+            this.setState({refreshing: false});
+        } catch (error) {
+            console.log(error)
+        }
     }
     render() {
         /*
@@ -163,60 +210,7 @@ export default class userHome extends React.Component {
                                                 buttonStyle={{backgroundColor:'#171721',width:wp('25%')}}
                                                 titleStyle={{fontSize:hp('3%')}}
                                                 title="Leer"
-                                                onPress={()=>{
-                                                    if(global.type != null && global.type == 'guest'){
-                                                        Alert.alert(
-                                                            "Importante",
-                                                            "No puede leer un libro siendo un invitado",
-                                                            [
-                                                              { text: "Acepto", onPress: async() => {}
-                                                                }
-                                                            ],
-                                                            { cancelable: true }
-                                                          );
-                                                    }else{
-                                                        User.getFinish(_id,(e,finish)=>{
-                                                            if(!e){
-                                                                if(!finish){
-                                                                    Alert.alert(
-                                                                        "Importante",
-                                                                        "Considere comprar la version Fisica para apoyar al creador del libro",
-                                                                        [
-                                                                            { text: "Acepto", 
-                                                                                onPress: async() => {
-                                                                                    this.props.navigation.navigate('pdfView',{_id});
-                                                                                }
-                                                                            }
-                                                                        ],
-                                                                        { cancelable: true }
-                                                                    );
-                                                                }else{
-                                                                    Alert.alert(
-                                                                        "Felicitaciones",
-                                                                        "Ya terminaste el libro te gustaria re leerlo o te gustaria calificarlo",
-                                                                        [
-                                                                            { text: "Calificarlo", onPress: async() => {this.props.navigation.navigate('Read')}},
-                                                                            { text: "Re leerlo", onPress: async() => {this.readAgain((e)=>{
-                                                                                if(!e)this.props.navigation.navigate('pdfView',{_id});
-                                                                            })}}
-                                                                        ],
-                                                                        { cancelable: true }
-                                                                      );
-                                                                }
-                                                            }else{
-                                                                Alert.alert(
-                                                                    "Lo siento",
-                                                                    "Ocurrio un problema vuelva a intentarlo",
-                                                                    [
-                                                                        { text: "aceptar", onPress: async() => {}},                                                                       { text: "Re leerlo", onPress: async() => {}}
-                                                                    ],
-                                                                    { cancelable: true }
-                                                                  );
-                                                            }
-                                                        })
-                                                        
-                                                    }
-                                                }}
+                                                onPress={this.readButton}
                                             />
                                             <Button
                                                 containerStyle={{marginTop:wp('10%')}}

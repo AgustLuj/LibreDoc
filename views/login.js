@@ -31,24 +31,23 @@ export default class Login extends React.Component {
         await Keyboard.dismiss();
         this.setState({errU:false,errG:false});
         if(this.name.length >=4 && this.pass.length >=4 ){
-            await User.getData(this.name,this.pass,async(err,data)=>{
-                if(err){
-                    this.setState({errG:true,info:data.msg})
-                    return null;
-                }else{
-                    let {token,username,_id}=data
-                    global.user={username,_id};
-                    global.token = token;
-                    await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
-                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
-                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
-                    
-                    this.props.navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'drawer', }],
-                    })
-                }
-            })
+            try {
+                let {token,username,_id} = await User.getData(this.name,this.pass);
+                
+                global.user={username,_id};
+                global.token = token;
+                await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
+                await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
+                await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                
+                this.props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'drawer', }],
+                })
+            } catch (error) {
+                this.setState({errG:true,info:error.message})
+                return null;
+            }
         }else{
             if(this.name.length <4){
                 this.setState({errU:true,info:'El usuario ingresado es muy corto'})
@@ -68,32 +67,32 @@ export default class Login extends React.Component {
             return null;
         }else{
             if(this.name.length >=4 && this.pass.length >=4 ){
-                await User.setData(this.name,this.pass,(f,data)=>{
-                    if(!f){
-                        Alert.alert(
-                            "Importante",
-                            "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
-                            [
-                                { text: "Acepto", onPress: async() => {
+                try {
+                    let {token,username,_id} = await User.setData(this.name,this.pass);
+                    Alert.alert(
+                        "Importante",
+                        "No almacenamos ningun tipo de informacion sencible solamente tu usuario y contraseña para el uso correctamente de la aplicacion",
+                        [
+                            { text: "Acepto", onPress: async() => {
 
-                                    let {token,username,_id}=data
-                                    global.user={username,_id};
-                                    global.token = token;
-                                    await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
-                                    await AsyncStorage.setItem('@Login', JSON.stringify({login:true})); 
-                                    await AsyncStorage.setItem('@Token',JSON.stringify({token}));
-                                    this.props.navigation.reset({
-                                        index: 0,
-                                        routes: [{ name: 'drawer', }],
-                                    });} 
-                                }
-                            ],
-                            { cancelable: true }
-                            );
-                    }else{
-                        this.setState({errG:true,info:data.msg});        
-                    }
-                })
+                                global.user={username,_id};
+                                global.token = token;
+                                await AsyncStorage.setItem('@User', JSON.stringify({username,_id}));
+                                await AsyncStorage.setItem('@Login', JSON.stringify({login:true}));
+                                await AsyncStorage.setItem('@Token',JSON.stringify({token}));
+                                
+                                this.props.navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'drawer', }],
+                                })}
+                            }
+                        ],
+                        { cancelable: true }
+                    );
+                } catch (error) {
+                    this.setState({errG:true,info:error.message})
+                    return null;
+                }
             }else{
                 if(this.name.length <4){
                     this.setState({errU:true,info:'El usuario ingresado es muy corto'})

@@ -16,7 +16,6 @@ export default class userHome extends React.Component {
             noti:false,
             recharge:false,
         }
-        this._onRefresh=this._onRefresh.bind(this);
         this.books=[];
         this.skip=0;
         this.three = false;
@@ -30,53 +29,51 @@ export default class userHome extends React.Component {
         });
         this._onRefresh();
     }
-    _onRefresh = () => {
+    async componentWillUnmount(){
+        this.focusListener();
+        this.setState({refreshing: false});
+    }
+    _onRefresh = async() => {
         this.setState({refreshing: true});
         //this.books = []
-        this.loadBook((err,book)=>{
-            if(!err){
-                if(book.length > 0 ){
-                    this.books=book; 
-                }
-                this.setState({refreshing: false});
-                return null;
+        try {
+            let book = await this.loadBook();
+            if(book.length > 0 ){
+                this.books=book; 
             }
             this.setState({refreshing: false});
-        });
+            return null;
+
+        } catch (error) {
+            console.log(error);
+            this.setState({refreshing: false});
+        }
     }
-    async loadBook(fn){
+    async loadBook(){
         switch(this.type){
             case 1:
-                await Books.getBooks(this.skip,(r,books)=>{
-                    if(!r){
-                        //console.log(books)
-                        fn(false,books)
-                    }else{
-                        fn(true)
-                    }
-                })
-                break;
+                try {
+                    let books = await Books.getBooks();
+                    return books;
+                } catch (error) {
+                    throw new Error();
+                }
             case 2:
-                await Books.getUsersBooks(true,(r,books)=>{
-                    if(!r){
-                        fn(false,books)
-                    }else{
-                        fn(true)
-                    }
-                })
-                break;
+                try {
+                    let books = await Books.getUsersBooks(true);
+                    return books
+                } catch (error) {
+                    throw new Error(error.message);
+                }
             case 3:
-                await Books.getUsersBooks(false,(r,books)=>{
-                    if(!r){
-                        fn(false,books)
-                    }else{
-                        fn(true)
-                    }
-                })
-                break;
+                try {
+                    let books = await Books.getUsersBooks(false);
+                    return books
+                } catch (error) {
+                    throw new Error(error.message);
+                }
             default:
-                fn(true)
-                break;
+                throw new Error('3');
         }
     }
     async loadMoreBook(){
@@ -105,6 +102,7 @@ export default class userHome extends React.Component {
         this.rows=(this.rows == 2)?3:2;
         this.setState({change:true})
     }
+    
     isCloseToBottom({layoutMeasurement, contentOffset, contentSize}){
         const paddingToBottom = 0.05;
         return layoutMeasurement.height + contentOffset.y >=

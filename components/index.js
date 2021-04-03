@@ -1,23 +1,23 @@
 class User{
-    async getData(username,pass,fn){
-        await fetch(`${global.uri}/auth/login`, {
+    getData = async(username,pass) =>{
+        const querry = await fetch(`${global.uri}/auth/login`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true,data);  
-            }else{
-                fn(false,data)
-            }
-        }).catch(e=> fn(true,e)); 
-        
-        /*
-        }*/
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg)
+        }else{
+            return data;
+        }
     }
     sendIdToken = async(idToken) =>{
         const querry = await fetch(`${global.uri}/auth/google/`, {
@@ -30,86 +30,97 @@ class User{
         });
         //console.log('data');
         const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
         if(querry.status != 200){
-            throw new Error('No pasa');
+            throw new Error(data.msg);
         }else{
             return data
         }
     }
-    async setData(username,pass,fn){
-        await fetch(`${global.uri}/auth/register`, {
+    setData = async(username,pass) =>{
+        const querry = await fetch(`${global.uri}/auth/register`, {
             method: 'POST',
             body: JSON.stringify({username,pass}),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                let {errors}=data;
-                fn(true,errors[0]);
-            }else{
-                fn(false,data)
-            }
-        }).catch(e=> fn(true)); 
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            let {errors}=data;
+            fn(true,errors[0]);
+        }else{
+            fn(false,data)
+        }
         
     }
     async addBook(id,fn){
-        await fetch(`${global.uri}/users/${global.user.username}/add/${id}`, {
+        let querry = await fetch(`${global.uri}/users/${global.user.username}/add/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
               'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true);          
-            }else{
-                fn(false,data['biblio']); 
-            }
-        }).catch(e=> fn(true));
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data['biblio']
+        }
     }
-    async addFavBook(id,fn){
-        await fetch(`${global.uri}/users/${global.user.username}/fav/${id}`, {
+    addFavBook = async(id,fn) =>{
+        let querry = await fetch(`${global.uri}/users/${global.user.username}/fav/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
               'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true);          
-            }else{
-                fn(false,data['favorite']); 
-            }
-        }).catch(e=> fn(true));
-        
+        }) 
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data['favorite']
+        }      
     }
-    async searchBook(id,fn){
-        await fetch(`${global.uri}/users/${global.user.username}/search/${id}`, {
+    searchBook = async(id,fn) =>{
+        let querry = await fetch(`${global.uri}/users/${global.user.username}/search/${id}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
               'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true);          
-            }else{
-                fn(false,data);       
-            } 
-        }).catch(e=> {
-            console.log(e)
-            fn(true)
-        });
-        
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data
+        }    
     }
     async savePage(id,pages,fn){
         await fetch(`${global.uri}/users/${global.user.username}/updatePage/${id}`, {
@@ -206,49 +217,46 @@ class User{
         }).catch(e=> fn(true));
         
     }
-    async getFinish(bookId,fn){
-        await fetch(`${global.uri}/users/${global.user.username}/getFinish/${bookId}`, {
+    getFinish = async(bookId) =>{
+        let querry = await fetch(`${global.uri}/users/${global.user.username}/getFinish/${bookId}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
               'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true)
-            }else{
-                if(data['finish']){
-                    fn(false,true);     
-                }else{
-                    fn(false,false)
-                }
-            } 
-        }).catch(e=> fn(true));
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data['finish']
+        } 
         
     }
-    async readAgain(bookId,fn){
-        await fetch(`${global.uri}/users/${global.user.username}/readAgain/${bookId}`, {
+    readAgain = async(bookId) =>{
+        let querry = await fetch(`${global.uri}/users/${global.user.username}/readAgain/${bookId}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
               'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true)
-            }else{
-                
-                if(data['finish']){
-                    fn(false,true);     
-                }else{
-                    fn(false,false)
-                }
-            } 
-        }).catch(e=> fn(true));   
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data['finish']
+        } 
     }  
 }
 class Books{
@@ -269,56 +277,64 @@ class Books{
             }
         }).catch(e=> fn(true)); 
     }
-    async getBooks(skip,fn){
-        await fetch(`${global.uri}/books`, {
+    getBooks = async() =>{
+        let querry = await fetch(`${global.uri}/books`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true)     
-            }else{
-                //console.log(data);
-                fn(false,data)
-            }
-        }).catch(e=> fn(true)); 
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data
+        }
     }
-    async getDataBook(id,fn){
-        await fetch(`${global.uri}/books/${id}/all`, {
+    getDataBook = async(id) =>{
+        let querry = await fetch(`${global.uri}/books/${id}/all`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json'
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true)     
-            }else{
-                fn(false,data)
-            }
-        }).catch(e=> fn(true));
-        
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data
+        }
     }
-    async getUsersBooks(type,fn){
+    getUsersBooks = async(type)=>{
         let querry = await fetch((type)?`${global.uri}/books/biblio/${global.user.username}`:`${global.uri}/books/favs/${global.user.username}`, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'x-token':global.token
             }
-        }).then(async querry=>{
-            const data = await querry.json();
-            if(querry.status != 200){
-                fn(true)     
-            }else{
-                fn(false,data)
-            }
-           
-        }).catch(e=> fn(true));
+        })
+        const data = await querry.json();
+        if(querry.status == 500){
+            console.log(data)
+            throw new Error("Ocurrio un error interno");
+        }
+        if(querry.status != 200){
+            throw new Error(data.msg);          
+        }else{
+            return data
+        }
+        
     }
     
 }

@@ -30,53 +30,32 @@ export default class userHome extends React.Component {
         });
         this._onRefresh();
     }
-    _onRefresh = () => {
+    componentWillUnmount(){
+        this.focusListener();
+        this.setState({refreshing: false});
+    }
+    _onRefresh = async() => {
         this.setState({refreshing: true});
         this.books = []
-        this.loadBook((e,book)=>{
-            if(!e){
-                this.books=book;
-                this.skip+=10;
-                this.setState({refreshing: false});
-            }else{
-                this.setState({refreshing: false});
+        try {
+            let book = await this.loadBook();
+            if(book.length > 0 ){
+                this.books=book; 
             }
-        });
+            this.setState({refreshing: false});
+            return null;
+
+        } catch (error) {
+            this.setState({refreshing: false});
+        }
     }
-    async loadBook(fn){
-        await Books.getBooks(this.skip,(r,books)=>{
-            if(!r){
-                fn(false,books)
-            }else{
-                fn(true);
-            }
-        })
-    }
-    async loadMoreBook(){
-        /*await this.loadBook((book)=>{
-            book.forEach((a)=>{
-                let c = this.books.find(({_id})=>a._id === _id);
-                if(c == null){
-                    this.books.push(a);
-                }
-            })
-        });
-        this.skip+=10;
-        this.setState({recharge:false});*/
-    }
-    changeScale(){
-        this.three=(this.three)?false:true;
-        this.rows=(this.rows == 2)?3:2;
-        this.setState({change:true})
-    }
-    isCloseToBottom({layoutMeasurement, contentOffset, contentSize}){
-        const paddingToBottom = 0.05;
-        return layoutMeasurement.height + contentOffset.y >=
-          contentSize.height - paddingToBottom; 
-    }
-    componentWillUnmount(){
-        var controller = new AbortController();
-        controller.abort();
+    loadBook = async() =>{
+        try {
+            let books = await Books.getBooks();
+            return books;
+        } catch (error) {
+            throw new Error();
+        }
     }
     render() {
        b=0;
